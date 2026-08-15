@@ -1,0 +1,53 @@
+services:
+  # Backend + AI Agent Service
+  - type: web
+    name: csa-backend
+    env: docker
+    dockerfilePath: Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3001
+      - key: BACKEND_URL
+        value: https://csa-backend.onrender.com
+      - key: FRONTEND_URL
+        # Set this to your frontend URL after deploying Next.js
+        sync: false
+      - key: CRONOS_TESTNET_RPC
+        value: https://evm-t3.cronos.org
+      - key: CHAIN_ID
+        value: "338"
+      - key: NETWORK_NAME
+        value: cronos-testnet
+      - key: SENTINEL_ADDRESS
+        value: 0x2db87A4BBE1F767FFCB0338dAeD600fc096759Ff
+      - key: MOCK_ROUTER_ADDRESS
+        value: 0x3796754AC5c3b1C866089cd686C84F625CE2e8a6
+      - key: WCRO_ADDRESS
+        value: 0x7D7c0E58a280e70B52c8299d9056e0394Fb65750
+      - key: TUSD_ADDRESS
+        value: 0xc21223249CA28397B4B6541dfFaECc539BfF0c59
+      - key: PRIVATE_KEY
+        sync: false # Set in Render Dashboard
+      - key: AGENT_PRIVATE_KEY
+        sync: false # Set in Render Dashboard
+      - key: GROQ_API_KEY
+        sync: false # Set in Render Dashboard
+      - key: GEMINI_API_KEY
+        sync: false # Set in Render Dashboard
+
+  # Frontend Service (Next.js)
+  - type: web
+    name: csa-frontend
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm run start
+    staticPublishPath: frontend/.next
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://csa-backend.onrender.com/api
+      - key: NEXT_PUBLIC_CHAIN_ID
+        value: "338"
+      - key: NEXT_PUBLIC_RPC_URL
+        value: https://evm-t3.cronos.org
