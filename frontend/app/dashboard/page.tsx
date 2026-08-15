@@ -1337,1339 +1337,860 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-[#050505] text-white">
+      {/* Subtle ambient gradient background */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(255,255,255,0.02)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(255,255,255,0.015)_0%,transparent_40%)]" />
+      </div>
+
       {/* Content */}
       <div className="relative z-10">
-        {/* Header */}
-        <header className="border-b border-neutral-800 bg-black/90 backdrop-blur-md sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link href="/" className="flex items-center gap-2.5">
-                <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm shadow-sm">
+        {/* Header — sticky frosted glass navbar */}
+        <header className="border-b border-white/[0.06] bg-black/60 backdrop-blur-2xl sticky top-0 z-50">
+          <div className="max-w-[1440px] mx-auto px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-3.5">
+              <Link href="/" className="flex items-center gap-2.5 group">
+                <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-shadow">
                   S
                 </div>
                 <span className="font-bold text-lg text-white tracking-tight">
                   Sentinel AI
                 </span>
               </Link>
-              <span className="px-2.5 py-0.5 bg-neutral-900 text-neutral-300 text-xs rounded-full border border-neutral-800 font-medium">
-                Terminal
-              </span>
+              <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-white/[0.04] rounded-full border border-white/[0.06]">
+                <div className="w-1.5 h-1.5 rounded-full bg-white/40" />
+                <span className="text-[10px] font-medium text-white/50 uppercase tracking-widest">Terminal</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              {/* Agent Status Indicator */}
-              <div className="flex items-center gap-2 px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-full">
-                <div className={`w-2 h-2 rounded-full ${agentStatus.is_running ? 'bg-white animate-pulse' : 'bg-neutral-600'}`} />
-                <span className="text-xs text-neutral-300">
-                  {agentStatus.is_running ? 'Agent Active' : 'Agent Idle'}
+            <div className="flex items-center gap-2.5">
+              {/* Live Agent Pill */}
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-full">
+                <div className={`w-2 h-2 rounded-full transition-colors ${agentStatus.is_running ? 'bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)] animate-pulse' : 'bg-white/20'}`} />
+                <span className="text-[11px] font-medium text-white/60">
+                  {agentStatus.is_running ? 'LIVE' : 'IDLE'}
                 </span>
               </div>
               
-              {/* Start/Stop Agent Button */}
+              {/* Start/Stop Agent */}
               <button
                 onClick={agentStatus.is_running ? handleStopAgent : handleStartAgent}
                 disabled={isStartingAgent || isStoppingAgent}
-                className={`px-4 py-1.5 rounded-full font-semibold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`px-4 py-1.5 rounded-full font-semibold text-[11px] uppercase tracking-wider transition-all disabled:opacity-40 disabled:cursor-not-allowed ${
                   agentStatus.is_running
-                    ? 'bg-neutral-900 text-white border border-neutral-700 hover:bg-neutral-800'
-                    : 'bg-white text-black hover:bg-neutral-200 shadow-sm'
+                    ? 'bg-white/[0.06] text-white/70 border border-white/[0.1] hover:bg-white/[0.1] hover:text-white'
+                    : 'bg-white text-black hover:bg-white/90 shadow-[0_0_20px_rgba(255,255,255,0.15)]'
                 }`}
               >
-                {isStartingAgent ? 'Starting...' : isStoppingAgent ? 'Stopping...' : agentStatus.is_running ? 'Stop Agent' : 'Start Agent'}
+                {isStartingAgent ? '...' : isStoppingAgent ? '...' : agentStatus.is_running ? 'Stop' : 'Start Agent'}
               </button>
               
-              {/* How It Works Button */}
               <Link
                 href="/how-it-works"
-                className="px-3.5 py-1.5 bg-neutral-950 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-600 rounded-full font-medium text-xs transition-all flex items-center gap-1.5"
+                className="hidden md:flex px-3 py-1.5 bg-white/[0.03] text-white/50 border border-white/[0.06] hover:text-white hover:border-white/[0.15] rounded-full font-medium text-[11px] transition-all items-center gap-1.5"
               >
-                Documentation
+                Docs
               </Link>
               
               {isConnected && address && (
-                <div className="px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full">
-                  <p className="text-neutral-200 text-xs font-mono">
-                    {address.slice(0, 6)}...{address.slice(-4)}
+                <div className="hidden sm:block px-3 py-1.5 bg-white/[0.03] border border-white/[0.06] rounded-full">
+                  <p className="text-white/50 text-[11px] font-mono">
+                    {address.slice(0, 6)}···{address.slice(-4)}
                   </p>
                 </div>
               )}
               <button
                 onClick={loadData}
                 disabled={isRefreshing}
-                className="p-1.5 hover:bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors disabled:opacity-50"
+                className="p-1.5 hover:bg-white/[0.06] border border-white/[0.06] rounded-lg text-white/30 hover:text-white transition-all disabled:opacity-40"
                 title="Refresh data"
               >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
               <Link
                 href="/"
-                className="p-1.5 hover:bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors"
+                className="p-1.5 hover:bg-white/[0.06] border border-white/[0.06] rounded-lg text-white/30 hover:text-white transition-all"
               >
-                <Home className="w-4 h-4" />
+                <Home className="w-3.5 h-3.5" />
               </Link>
             </div>
           </div>
         </header>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-          {/* Top Row - Key Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* CRO Price Card */}
-            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+        <main className="max-w-[1440px] mx-auto px-5 py-5 space-y-4">
+          
+          {/* ═══ ROW 1: Key Metrics Strip ═══ */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {/* CRO Price */}
+            <div className="glass-panel rounded-2xl p-5 group hover:border-white/[0.15] transition-all">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">CRO Price</span>
-                <DollarSign className="w-4 h-4 text-neutral-400" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium">CRO / USD</span>
+                <DollarSign className="w-3.5 h-3.5 text-white/20" />
               </div>
-              <div className="text-3xl font-bold text-white tracking-tight">${croPrice?.price ? croPrice.price.toFixed(4) : '0.0000'}</div>
-              <div className="flex items-center gap-1 mt-2 text-xs font-mono text-neutral-400">
-                {(croPrice?.change_24h || 0) >= 0 ? <ArrowUp className="w-3.5 h-3.5 text-white" /> : <ArrowDown className="w-3.5 h-3.5 text-neutral-400" />}
-                <span>{Math.abs(croPrice?.change_24h || 0).toFixed(2)}% (24h)</span>
+              <div className="text-2xl lg:text-3xl font-bold text-white tracking-tight font-mono">${croPrice?.price ? croPrice.price.toFixed(4) : '0.0000'}</div>
+              <div className="flex items-center gap-1.5 mt-2">
+                {(croPrice?.change_24h || 0) >= 0 ? <ArrowUp className="w-3 h-3 text-white/70" /> : <ArrowDown className="w-3 h-3 text-white/40" />}
+                <span className="text-[11px] font-mono text-white/40">{Math.abs(croPrice?.change_24h || 0).toFixed(2)}% 24h</span>
               </div>
             </div>
 
-            {/* Sentiment Score Card */}
-            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+            {/* Sentiment */}
+            <div className="glass-panel rounded-2xl p-5 group hover:border-white/[0.15] transition-all">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">Market Sentiment</span>
-                <Gauge className="w-4 h-4 text-neutral-400" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium">Sentiment</span>
+                <Gauge className="w-3.5 h-3.5 text-white/20" />
               </div>
               <SentimentGauge value={marketIntel.sentiment} signal={marketIntel.signal} />
-              <div className="text-center mt-2 text-xs text-neutral-400">
-                {marketIntel.sources || 0}/4 sources confirming
+              <div className="text-center mt-1 text-[10px] text-white/30 font-mono">
+                {marketIntel.sources || 0}/4 oracles
               </div>
             </div>
 
-            {/* Agent Status Card */}
-            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+            {/* Agent Status */}
+            <div className="glass-panel rounded-2xl p-5 group hover:border-white/[0.15] transition-all">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">Agent Status</span>
-                <Bot className="w-4 h-4 text-neutral-400" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium">Agent</span>
+                <Bot className="w-3.5 h-3.5 text-white/20" />
               </div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`w-2.5 h-2.5 rounded-full ${agentStatus.is_running ? "bg-white animate-pulse" : "bg-neutral-600"}`} />
+              <div className="flex items-center gap-2.5 mb-2">
+                <div className={`w-2.5 h-2.5 rounded-full ${agentStatus.is_running ? "bg-white shadow-[0_0_10px_rgba(255,255,255,0.6)] animate-pulse" : "bg-white/15"}`} />
                 <span className="text-xl font-semibold text-white">
-                  {agentStatus.is_running ? "Running" : "Stopped"}
+                  {agentStatus.is_running ? "Active" : "Idle"}
                 </span>
               </div>
-              <div className="text-xs text-neutral-400">
-                {agentStatus.is_running ? (
-                  <>Next cycle in {formatCountdown(agentStatus.next_cycle_in)}</>
-                ) : (
-                  <>Click Start to begin trading</>
-                )}
-              </div>
-              <div className="text-xs text-neutral-500 mt-1">
-                Total cycles: {agentStatus.total_cycles}
+              <div className="text-[10px] text-white/30 font-mono">
+                {agentStatus.is_running ? `Next: ${formatCountdown(agentStatus.next_cycle_in)}` : 'Awaiting start command'}
               </div>
             </div>
 
-            {/* Sentinel Status Card */}
-            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+            {/* Sentinel Limit */}
+            <div className="glass-panel rounded-2xl p-5 group hover:border-white/[0.15] transition-all">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">Sentinel Limit</span>
-                <Shield className="w-4 h-4 text-neutral-400" />
+                <span className="text-[10px] uppercase tracking-[0.15em] text-white/40 font-medium">Sentinel</span>
+                <Shield className="w-3.5 h-3.5 text-white/20" />
               </div>
-              <div className="text-3xl font-bold text-white tracking-tight">{sentinelStatus.remaining?.toFixed(2) || '0.00'} CRO</div>
-              <div className="w-full bg-neutral-800 rounded-full h-1.5 mt-3">
+              <div className="text-2xl lg:text-3xl font-bold text-white tracking-tight font-mono">{sentinelStatus.remaining?.toFixed(2) || '0.00'}</div>
+              <div className="w-full bg-white/[0.06] rounded-full h-1 mt-3 overflow-hidden">
                 <div
-                  className="bg-white h-1.5 rounded-full"
+                  className="bg-white/80 h-1 rounded-full transition-all duration-700"
                   style={{ width: `${((sentinelStatus.remaining || 0) / (sentinelStatus.daily_limit || 1)) * 100}%` }}
                 />
               </div>
-              <div className="text-xs text-neutral-400 mt-2">
-                {sentinelStatus.spent_today?.toFixed(2) || '0.00'} / {sentinelStatus.daily_limit?.toFixed(2) || '0.00'} used today
+              <div className="text-[10px] text-white/30 mt-1.5 font-mono">
+                {sentinelStatus.spent_today?.toFixed(2) || '0'} / {sentinelStatus.daily_limit?.toFixed(2) || '0'} used
               </div>
             </div>
           </div>
 
-          {/* Manual Trade Panel */}
-          <div className="bg-neutral-950/90 backdrop-blur-sm rounded-2xl p-6 border border-neutral-800">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h3 className="text-base font-semibold text-white">Manual Trade Execution</h3>
-                <p className="text-xs text-neutral-400">Execute test swaps instantly on Cronos Testnet</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Direction Selector */}
-              <div>
-                <label className="block text-xs font-medium text-neutral-400 mb-2">Direction</label>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setManualTradeDirection('buy')}
-                    className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
-                      manualTradeDirection === 'buy'
-                        ? 'bg-white text-black border border-white shadow-sm'
-                        : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:bg-neutral-800 hover:text-white'
-                    }`}
-                  >
-                    <ArrowUp className="w-3.5 h-3.5 inline mr-1" />
-                    Buy WCRO
-                  </button>
-                  <button
-                    onClick={() => setManualTradeDirection('sell')}
-                    className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
-                      manualTradeDirection === 'sell'
-                        ? 'bg-white text-black border border-white shadow-sm'
-                        : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:bg-neutral-800 hover:text-white'
-                    }`}
-                  >
-                    <ArrowDown className="w-3.5 h-3.5 inline mr-1" />
-                    Sell WCRO
-                  </button>
-                </div>
-              </div>
-              
-              {/* Amount Input */}
-              <div>
-                <label className="block text-xs font-medium text-neutral-400 mb-2">Amount (TCRO/WCRO)</label>
-                <input
-                  type="number"
-                  value={manualTradeAmount}
-                  onChange={(e) => setManualTradeAmount(e.target.value)}
-                  step="0.1"
-                  min="0.01"
-                  className="w-full px-3.5 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-white text-sm focus:outline-none focus:border-white transition-colors"
-                  placeholder="0.1"
-                />
-              </div>
-              
-              {/* Trade Info */}
-              <div className="flex flex-col justify-end">
-                <div className="bg-neutral-900/60 rounded-lg p-2.5 border border-neutral-800">
-                  <div className="text-xs text-neutral-400 mb-0.5">Estimated Output</div>
-                  <div className="text-white text-sm font-semibold">
-                    ~{(parseFloat(manualTradeAmount || '0') * 0.98).toFixed(4)} {manualTradeDirection === 'buy' ? 'WCRO' : 'TCRO'}
+          {/* ═══ ROW 2: HERO — TradingView Chart + Sidebar ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            {/* TradingView Chart — 3/4 width, hero element */}
+            <div className="lg:col-span-3 glass-panel rounded-2xl p-4 h-[520px]">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                    <BarChart3 className="w-4 h-4 text-white/70" />
                   </div>
-                  <div className="text-[10px] text-neutral-500">Slippage protected</div>
-                </div>
-              </div>
-              
-              {/* Execute Button */}
-              <div className="flex items-end">
-                <button
-                  onClick={handleManualTrade}
-                  disabled={isExecutingTrade || !isConnected || parseFloat(manualTradeAmount || '0') <= 0}
-                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-neutral-200 text-black rounded-lg font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
-                >
-                  {isExecutingTrade ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Executing...
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4" />
-                      Execute Trade
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-            
-            {!isConnected && (
-              <div className="mt-4 p-3 bg-neutral-900/80 border border-neutral-800 rounded-lg flex items-center gap-2 text-neutral-300 text-xs">
-                <AlertTriangle className="w-4 h-4 text-white" />
-                Connect your wallet above to execute test trades on Cronos Testnet
-              </div>
-            )}
-          </div>
-
-          {/* CDC Price Comparison Panel */}
-          <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-800">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-neutral-900 rounded-lg border border-neutral-800">
-                  <TrendingUp className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold text-white">Price Comparison</h3>
-                  <p className="text-xs text-neutral-400">Multi-source price aggregation</p>
-                </div>
-              </div>
-              <div className="bg-neutral-900 px-3 py-1 rounded-full border border-neutral-800 text-xs text-neutral-300">
-                <span className="text-xs font-semibold text-purple-400">Powered by Crypto.com</span>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              {/* CoinGecko Price */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">CoinGecko</span>
-                  <div className="px-2 py-0.5 bg-blue-500/20 rounded text-xs text-blue-400 border border-blue-500/30">
-                    Primary
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">CRO/USD</h3>
+                    <p className="text-[10px] text-white/30">Live market data</p>
                   </div>
                 </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-white">
-                    ${croPrice?.price ? croPrice.price.toFixed(6) : '0.080000'}
-                  </span>
-                </div>
-                <div className={`text-sm mt-1 ${(croPrice?.change_24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  24h: {(croPrice?.change_24h || 0) >= 0 ? '+' : ''}{(croPrice?.change_24h || 0).toFixed(2)}%
-                </div>
+                <span className="text-[9px] font-mono text-white/20 bg-white/[0.03] px-2 py-0.5 rounded border border-white/[0.05]">TRADINGVIEW</span>
               </div>
-              
-              {/* Crypto.com Price */}
-              <div className="bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-sm rounded-xl p-4 border border-purple-500/50">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-gray-400">Crypto.com</span>
-                  <div className="px-2 py-0.5 bg-purple-500/20 rounded text-xs text-purple-400 border border-purple-500/30">
-                    CDC Agent
-                  </div>
-                </div>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-white">
-                    ${cdcPrice?.price ? cdcPrice.price.toFixed(6) : '0.085000'}
-                  </span>
-                </div>
-                <div className={`text-sm mt-1 ${(cdcPrice?.change24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  24h: {(cdcPrice?.change24h || 0) >= 0 ? '+' : ''}{(cdcPrice?.change24h || 0).toFixed(2)}%
-                </div>
-              </div>
-            </div>
-            
-            {/* Comparison Stats */}
-            {priceComparison && priceComparison.avgPrice !== undefined ? (
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-gray-900/40 rounded-lg p-3 text-center border border-gray-700">
-                  <div className="text-xs text-gray-400 mb-1">Average</div>
-                  <div className="text-lg font-bold text-cyan-400">
-                    ${priceComparison?.avgPrice ? priceComparison.avgPrice.toFixed(6) : '0.000000'}
-                  </div>
-                </div>
-                <div className="bg-gray-900/40 rounded-lg p-3 text-center border border-gray-700">
-                  <div className="text-xs text-gray-400 mb-1">Difference</div>
-                  <div className={`text-lg font-bold ${Math.abs(priceComparison?.percentageDiff || 0) < 1 ? 'text-green-400' : 'text-yellow-400'}`}>
-                    {(priceComparison?.percentageDiff || 0) >= 0 ? '+' : ''}{(priceComparison?.percentageDiff || 0).toFixed(2)}%
-                  </div>
-                </div>
-                <div className="bg-gray-900/40 rounded-lg p-3 text-center border border-gray-700">
-                  <div className="text-xs text-gray-400 mb-1">Spread</div>
-                  <div className="text-lg font-bold text-purple-400">
-                    ${((priceComparison?.spread || 0) * 1000).toFixed(3)}
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 bg-gray-900/40 border border-gray-700 rounded-lg text-center">
-                <p className="text-gray-400 text-sm">Fetching price comparison data...</p>
-              </div>
-            )}
-            
-            <div className="mt-4 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
-              <p className="text-xs text-gray-400 text-center">
-                📡 Real-time price feeds powered by <span className="text-purple-400 font-semibold">Crypto.com Agent Client SDK</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Multi-Agent Council Panel */}
-          <div className="bg-gradient-to-br from-blue-900/20 to-indigo-900/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-500/30">
-            <div className="flex items-center gap-3 mb-6">
-              <Bot className="w-7 h-7 text-blue-400" />
-              <div>
-                <h3 className="text-lg font-semibold text-white">Multi-Agent Trading Council</h3>
-                <p className="text-sm text-gray-400">3 AI agents vote on every decision</p>
-              </div>
-            </div>
-            
-            {agentVotes.length > 0 && agentStatus.is_running ? (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {agentVotes.map((agent, idx) => {
-                  const voteColors = {
-                    strong_buy: 'bg-green-500/20 border-green-500 text-green-400',
-                    buy: 'bg-green-500/10 border-green-500/50 text-green-400',
-                    hold: 'bg-gray-500/20 border-gray-500 text-gray-400',
-                    sell: 'bg-red-500/10 border-red-500/50 text-red-400',
-                    strong_sell: 'bg-red-500/20 border-red-500 text-red-400'
-                  };
-                  
-                  const agentIcons = {
-                    '🛡️ Risk Manager': '🛡️',
-                    '📊 Market Analyst': '📊',
-                    '⚡ Execution Specialist': '⚡'
-                  };
-                  
-                  return (
-                    <div key={idx} className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-5 border border-gray-700">
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-2">
-                          <span className="text-2xl">{agentIcons[agent.agent as keyof typeof agentIcons] || '🤖'}</span>
-                          <div>
-                            <div className="font-semibold text-white text-sm">
-                              {agent.agent.replace('🛡️ ', '').replace('📊 ', '').replace('⚡ ', '')}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {agent.agent.includes('Risk') ? 'Conservative' : 
-                               agent.agent.includes('Market') ? 'Data-Driven' : 'Aggressive'}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className={`px-4 py-2 rounded-lg border-2 mb-3 text-center font-bold ${voteColors[agent.vote as keyof typeof voteColors] || voteColors.hold}`}>
-                        {agent.vote.toUpperCase().replace('_', ' ')}
-                      </div>
-                      
-                      <div className="mb-3">
-                        <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs text-gray-400">Confidence</span>
-                          <span className="text-xs text-white font-semibold">{(agent.confidence * 100).toFixed(0)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all"
-                            style={{ width: `${agent.confidence * 100}%` }}
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="text-xs text-gray-400 leading-relaxed">
-                        {agent.reasoning}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="bg-gray-900/20 border border-gray-800 rounded-lg p-8 text-center opacity-50">
-                <Bot className="w-16 h-16 mx-auto mb-4 text-gray-700" />
-                <p className="text-gray-500 mb-2">Multi-Agent Council Inactive</p>
-                <p className="text-sm text-gray-600">
-                  {agentStatus.is_running ? '3 AI agents will vote on the next trading decision' : 'Start the agent to activate the trading council'}
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Performance Dashboard */}
-          <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="w-7 h-7 text-purple-400" />
-                <div>
-                  <h3 className="text-lg font-semibold text-white">Trading Performance</h3>
-                  <p className="text-sm text-gray-400">Live statistics from all executed trades</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm text-gray-400">Total Trades</div>
-                <div className="text-2xl font-bold text-white">{performanceMetrics.totalTrades}</div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {/* Win Rate */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                  <span className="text-xs text-gray-400">Win Rate</span>
-                </div>
-                <div className="text-2xl font-bold text-green-400">
-                  {performanceMetrics.winRate.toFixed(1)}%
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {performanceMetrics.winningTrades}W / {performanceMetrics.losingTrades}L
-                </div>
-              </div>
-              
-              {/* Total P&L */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-3 h-3 text-cyan-400" />
-                  <span className="text-xs text-gray-400">Total P&L</span>
-                </div>
-                <div className={`text-2xl font-bold ${performanceMetrics.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {performanceMetrics.totalPnL >= 0 ? '+' : ''}{performanceMetrics.totalPnL.toFixed(3)}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">TCRO</div>
-              </div>
-              
-              {/* Best Trade */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center gap-2 mb-2">
-                  <ArrowUp className="w-3 h-3 text-green-400" />
-                  <span className="text-xs text-gray-400">Best Trade</span>
-                </div>
-                <div className="text-2xl font-bold text-green-400">
-                  +{performanceMetrics.bestTrade.toFixed(3)}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">TCRO</div>
-              </div>
-              
-              {/* Worst Trade */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center gap-2 mb-2">
-                  <ArrowDown className={`w-3 h-3 ${performanceMetrics.worstTrade >= 0 ? 'text-yellow-400' : 'text-red-400'}`} />
-                  <span className="text-xs text-gray-400">Worst Trade</span>
-                </div>
-                <div className={`text-2xl font-bold ${performanceMetrics.worstTrade >= 0 ? 'text-yellow-400' : 'text-red-400'}`}>
-                  {performanceMetrics.worstTrade >= 0 ? '+' : ''}{performanceMetrics.worstTrade.toFixed(3)}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">TCRO</div>
-              </div>
-              
-              {/* Average Profit */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center gap-2 mb-2">
-                  <BarChart3 className="w-3 h-3 text-blue-400" />
-                  <span className="text-xs text-gray-400">Avg Profit</span>
-                </div>
-                <div className={`text-2xl font-bold ${performanceMetrics.avgProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {performanceMetrics.avgProfit >= 0 ? '+' : ''}{performanceMetrics.avgProfit.toFixed(3)}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">per trade</div>
-              </div>
-              
-              {/* Success Rate Gauge */}
-              <div className="bg-gray-900/60 backdrop-blur-sm rounded-xl p-4 border border-gray-700">
-                <div className="flex items-center gap-2 mb-2">
-                  <Gauge className="w-3 h-3 text-purple-400" />
-                  <span className="text-xs text-gray-400">Score</span>
-                </div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {performanceMetrics.totalTrades > 0 ? 
-                    Math.min(100, Math.round(performanceMetrics.winRate * 1.2)).toString() : '0'}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">/ 100</div>
-              </div>
-            </div>
-            
-            {performanceMetrics.totalTrades === 0 && (
-              <div className="mt-4 p-4 bg-gray-900/40 border border-gray-700 rounded-lg text-center">
-                <p className="text-gray-400 text-sm">
-                  No trades yet. Execute your first trade to see performance metrics!
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Second Row - TradingView Chart and Sentiment History */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* TradingView Chart */}
-            <div className="lg:col-span-2 bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800 h-[500px]">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold flex items-center gap-2 text-white">
-                  <BarChart3 className="w-5 h-5 text-cyan-400" />
-                  CRO/USD Live Chart
-                </h3>
-                <span className="text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded">TradingView</span>
-              </div>
-              <div className="h-[calc(100%-64px)] w-full bg-black/20 rounded-lg overflow-hidden border border-gray-800/50">
+              <div className="h-[calc(100%-52px)] w-full bg-black/40 rounded-xl overflow-hidden border border-white/[0.04]">
                 <TradingViewWidget />
               </div>
             </div>
 
-            {/* Sentiment History Chart */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-800 h-[400px] min-h-[300px]">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-blue-400" />
-                  Sentiment (24h)
-                </h3>
+            {/* Right sidebar — Manual Trade + Price Comparison */}
+            <div className="space-y-4">
+              {/* Quick Trade */}
+              <div className="glass-panel rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                    <Zap className="w-3.5 h-3.5 text-white/70" />
+                  </div>
+                  <span className="text-xs font-semibold text-white">Quick Trade</span>
+                </div>
+                
+                {/* Direction */}
+                <div className="flex gap-1.5 mb-3">
+                  <button
+                    onClick={() => setManualTradeDirection('buy')}
+                    className={`flex-1 py-2 rounded-lg font-semibold text-[10px] uppercase tracking-wider transition-all ${
+                      manualTradeDirection === 'buy'
+                        ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                        : 'bg-white/[0.04] text-white/40 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white'
+                    }`}
+                  >
+                    Buy
+                  </button>
+                  <button
+                    onClick={() => setManualTradeDirection('sell')}
+                    className={`flex-1 py-2 rounded-lg font-semibold text-[10px] uppercase tracking-wider transition-all ${
+                      manualTradeDirection === 'sell'
+                        ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.1)]'
+                        : 'bg-white/[0.04] text-white/40 border border-white/[0.06] hover:bg-white/[0.08] hover:text-white'
+                    }`}
+                  >
+                    Sell
+                  </button>
+                </div>
+
+                {/* Amount */}
+                <div className="mb-3">
+                  <label className="text-[10px] uppercase tracking-wider text-white/30 mb-1.5 block">Amount</label>
+                  <input
+                    type="number"
+                    value={manualTradeAmount}
+                    onChange={(e) => setManualTradeAmount(e.target.value)}
+                    step="0.1"
+                    min="0.01"
+                    className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.08] rounded-lg text-white text-sm font-mono focus:outline-none focus:border-white/30 transition-colors placeholder-white/15"
+                    placeholder="0.1"
+                  />
+                </div>
+
+                {/* Output estimate */}
+                <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.04] mb-3">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-0.5">Est. Output</div>
+                  <div className="text-white text-sm font-mono font-semibold">
+                    ~{(parseFloat(manualTradeAmount || '0') * 0.98).toFixed(4)} {manualTradeDirection === 'buy' ? 'WCRO' : 'TCRO'}
+                  </div>
+                </div>
+
+                {/* Execute */}
+                <button
+                  onClick={handleManualTrade}
+                  disabled={isExecutingTrade || !isConnected || parseFloat(manualTradeAmount || '0') <= 0}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-white/90 text-black rounded-lg font-semibold text-xs transition-all disabled:opacity-20 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+                >
+                  {isExecutingTrade ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Executing...</>
+                  ) : (
+                    <><Zap className="w-3.5 h-3.5" /> Execute</>
+                  )}
+                </button>
+                
+                {!isConnected && (
+                  <div className="mt-2 p-2 bg-white/[0.02] border border-white/[0.04] rounded-lg flex items-center gap-1.5 text-white/30 text-[10px]">
+                    <AlertTriangle className="w-3 h-3 text-white/20" />
+                    Connect wallet to trade
+                  </div>
+                )}
+              </div>
+
+              {/* Price Sources */}
+              <div className="glass-panel rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                    <TrendingUp className="w-3.5 h-3.5 text-white/70" />
+                  </div>
+                  <span className="text-xs font-semibold text-white">Price Oracles</span>
+                </div>
+
+                <div className="space-y-2.5">
+                  {/* CoinGecko */}
+                  <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] uppercase tracking-wider text-white/30">CoinGecko</span>
+                      <span className="text-[8px] font-mono text-white/20 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.05]">PRIMARY</span>
+                    </div>
+                    <span className="text-lg font-bold text-white font-mono">${croPrice?.price ? croPrice.price.toFixed(6) : '0.080000'}</span>
+                  </div>
+
+                  {/* CDC */}
+                  <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-[10px] uppercase tracking-wider text-white/30">Crypto.com</span>
+                      <span className="text-[8px] font-mono text-white/20 bg-white/[0.04] px-1.5 py-0.5 rounded border border-white/[0.05]">CDC SDK</span>
+                    </div>
+                    <span className="text-lg font-bold text-white font-mono">${cdcPrice?.price ? cdcPrice.price.toFixed(6) : '0.085000'}</span>
+                  </div>
+                </div>
+
+                {priceComparison && priceComparison.avgPrice !== undefined && (
+                  <div className="mt-2.5 grid grid-cols-3 gap-1.5">
+                    <div className="bg-white/[0.02] rounded-md p-2 text-center border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">AVG</div>
+                      <div className="text-[11px] font-bold text-white font-mono">${priceComparison.avgPrice.toFixed(4)}</div>
+                    </div>
+                    <div className="bg-white/[0.02] rounded-md p-2 text-center border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">DIFF</div>
+                      <div className="text-[11px] font-bold text-white font-mono">{(priceComparison.percentageDiff || 0).toFixed(2)}%</div>
+                    </div>
+                    <div className="bg-white/[0.02] rounded-md p-2 text-center border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">SPREAD</div>
+                      <div className="text-[11px] font-bold text-white font-mono">${((priceComparison.spread || 0) * 1000).toFixed(3)}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+              
+              {/* ═══ ROW 3: Multi-Agent Council + Performance ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+            {/* Multi-Agent Council */}
+            <div className="glass-panel rounded-2xl p-5">
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <Bot className="w-4 h-4 text-white/70" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Multi-Agent Council</h3>
+                  <p className="text-[10px] text-white/30">3 AI agents vote on every execution</p>
+                </div>
+              </div>
+              
+              {agentVotes.length > 0 && agentStatus.is_running ? (
+                <div className="space-y-3">
+                  {agentVotes.map((agent, idx) => {
+                    const agentIcons = {
+                      '🛡️ Risk Manager': '🛡️',
+                      '📊 Market Analyst': '📊',
+                      '⚡ Execution Specialist': '⚡'
+                    };
+                    return (
+                      <div key={idx} className="bg-white/[0.02] rounded-xl p-4 border border-white/[0.04] hover:border-white/[0.1] transition-all">
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{agentIcons[agent.agent as keyof typeof agentIcons] || '🤖'}</span>
+                            <div>
+                              <div className="font-semibold text-white text-xs">
+                                {agent.agent.replace('🛡️ ', '').replace('📊 ', '').replace('⚡ ', '')}
+                              </div>
+                              <div className="text-[9px] uppercase tracking-wider text-white/25">
+                                {agent.agent.includes('Risk') ? 'Conservative' : agent.agent.includes('Market') ? 'Data-Driven' : 'Aggressive'}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="px-2.5 py-1 rounded-md bg-white/[0.06] border border-white/[0.1] text-[10px] font-bold text-white uppercase tracking-wider">
+                            {agent.vote.toUpperCase().replace('_', ' ')}
+                          </span>
+                        </div>
+                        <div className="mb-2">
+                          <div className="flex justify-between items-center mb-1">
+                            <span className="text-[9px] uppercase tracking-wider text-white/25">Confidence</span>
+                            <span className="text-[10px] text-white font-mono font-semibold">{(agent.confidence * 100).toFixed(0)}%</span>
+                          </div>
+                          <div className="w-full bg-white/[0.04] rounded-full h-1">
+                            <div className="bg-white/70 h-1 rounded-full transition-all" style={{ width: `${agent.confidence * 100}%` }} />
+                          </div>
+                        </div>
+                        <p className="text-[10px] text-white/30 leading-relaxed">{agent.reasoning}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="bg-white/[0.02] rounded-xl p-8 text-center border border-white/[0.04]">
+                  <Bot className="w-8 h-8 mx-auto mb-2 text-white/10" />
+                  <p className="text-white/40 font-medium text-xs mb-0.5">Council Standby</p>
+                  <p className="text-[10px] text-white/20">{agentStatus.is_running ? 'Awaiting next voting cycle' : 'Start agent to activate council'}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Performance Metrics */}
+            <div className="glass-panel rounded-2xl p-5">
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                    <TrendingUp className="w-4 h-4 text-white/70" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-white">Performance</h3>
+                    <p className="text-[10px] text-white/30">Live trading statistics</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25">Trades</div>
+                  <div className="text-xl font-bold text-white font-mono">{performanceMetrics.totalTrades}</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2.5 mb-4">
+                <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-1">Win Rate</div>
+                  <div className="text-lg font-bold text-emerald-400 font-mono">{performanceMetrics.winRate.toFixed(1)}%</div>
+                  <div className="text-[9px] text-white/20 font-mono">{performanceMetrics.winningTrades}W / {performanceMetrics.losingTrades}L</div>
+                </div>
+                <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-1">Total P&L</div>
+                  <div className={`text-lg font-bold font-mono ${performanceMetrics.totalPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {performanceMetrics.totalPnL >= 0 ? '+' : ''}{performanceMetrics.totalPnL.toFixed(3)}
+                  </div>
+                  <div className="text-[9px] text-white/20 font-mono">TCRO</div>
+                </div>
+                <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-1">Avg Profit</div>
+                  <div className={`text-lg font-bold font-mono ${performanceMetrics.avgProfit >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {performanceMetrics.avgProfit >= 0 ? '+' : ''}{performanceMetrics.avgProfit.toFixed(3)}
+                  </div>
+                  <div className="text-[9px] text-white/20">per trade</div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2.5">
+                <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-1">Best</div>
+                  <div className="text-sm font-bold text-emerald-400 font-mono">+{performanceMetrics.bestTrade.toFixed(3)}</div>
+                </div>
+                <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-1">Worst</div>
+                  <div className={`text-sm font-bold font-mono ${performanceMetrics.worstTrade >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {performanceMetrics.worstTrade >= 0 ? '+' : ''}{performanceMetrics.worstTrade.toFixed(3)}
+                  </div>
+                </div>
+                <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.04]">
+                  <div className="text-[9px] uppercase tracking-wider text-white/25 mb-1">Score</div>
+                  <div className="text-sm font-bold text-indigo-400 font-mono">{performanceMetrics.totalTrades > 0 ? Math.min(100, Math.round(performanceMetrics.winRate * 1.2)).toString() : '0'}/100</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ═══ ROW 4: Sentiment Chart + Pool/Wallet ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Sentiment History */}
+            <div className="lg:col-span-2 glass-panel rounded-2xl p-5 h-[380px]">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <Activity className="w-4 h-4 text-white/70" />
+                </div>
+                <h3 className="text-sm font-semibold text-white">Sentiment (24h)</h3>
               </div>
               {sentimentHistory.length > 0 ? (
-                <div className="w-full h-[calc(100%-50px)] min-h-[200px]">
+                <div className="w-full h-[calc(100%-56px)]">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={sentimentHistory}>
                       <defs>
                         <linearGradient id="sentimentGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                          <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.2} />
                           <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="hour" stroke="#6b7280" fontSize={10} />
-                      <YAxis stroke="#6b7280" fontSize={10} domain={[0, 1]} />
-                      <Tooltip
-                        contentStyle={{ backgroundColor: "#1f2937", border: "1px solid #374151" }}
-                        labelStyle={{ color: "#9ca3af" }}
-                      />
-                      <Area
-                        type="monotone"
-                        dataKey="sentiment"
-                        stroke="#06b6d4"
-                        fill="url(#sentimentGradient)"
-                        strokeWidth={2}
-                      />
+                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+                      <XAxis dataKey="hour" stroke="rgba(255,255,255,0.15)" fontSize={9} />
+                      <YAxis stroke="rgba(255,255,255,0.15)" fontSize={9} domain={[0, 1]} />
+                      <Tooltip contentStyle={{ backgroundColor: "rgba(10,10,10,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "8px", backdropFilter: "blur(10px)" }} labelStyle={{ color: "rgba(255,255,255,0.4)" }} />
+                      <Area type="monotone" dataKey="sentiment" stroke="#06b6d4" fill="url(#sentimentGradient)" strokeWidth={1.5} />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-[calc(100%-50px)]">
-                  <div className="text-center text-gray-500">
-                    <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>No sentiment data yet</p>
-                    <p className="text-sm mt-1">Start the agent to collect sentiment data</p>
+                <div className="flex items-center justify-center h-[calc(100%-56px)]">
+                  <div className="text-center text-white/20">
+                    <Activity className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p className="text-xs">No sentiment data</p>
                   </div>
                 </div>
               )}
             </div>
-          </div>
 
-          {/* Third Row - Pool Status and Wallet */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Pool Status */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-400" />
-                WCRO/tUSD Pool
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-gray-400 text-sm mb-1">WCRO Balance</div>
-                  <div className="text-2xl font-bold text-cyan-400">
-                    {poolStatus.wcro_balance.toFixed(2)}
+            {/* Pool + Wallet */}
+            <div className="space-y-4">
+              {/* Pool */}
+              <div className="glass-panel rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap className="w-3.5 h-3.5 text-white/40" />
+                  <span className="text-xs font-semibold text-white">Pool Status</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-3">
+                  <div>
+                    <div className="text-[9px] uppercase tracking-wider text-white/25 mb-0.5">WCRO</div>
+                    <div className="text-lg font-bold text-white font-mono">{poolStatus.wcro_balance.toFixed(2)}</div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] uppercase tracking-wider text-white/25 mb-0.5">tUSD</div>
+                    <div className="text-lg font-bold text-white font-mono">{poolStatus.tusd_balance.toFixed(2)}</div>
                   </div>
                 </div>
-                <div>
-                  <div className="text-gray-400 text-sm mb-1">tUSD Balance</div>
-                  <div className="text-2xl font-bold text-green-400">
-                    {poolStatus.tusd_balance.toFixed(2)}
+                <div className="pt-2.5 border-t border-white/[0.04] space-y-1.5">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-white/30">Price</span>
+                    <span className="text-white font-mono">${poolStatus.price.toFixed(4)}</span>
+                  </div>
+                  <div className="flex justify-between text-xs">
+                    <span className="text-white/30">TVL</span>
+                    <span className="text-white font-mono">${poolStatus.tvl_usd.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
-              
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Pool Price</span>
-                  <span className="font-semibold">${poolStatus.price.toFixed(4)}</span>
-                </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span className="text-gray-400">TVL</span>
-                  <span className="font-semibold">${poolStatus.tvl_usd.toFixed(2)}</span>
-                </div>
-              </div>
-            </div>
 
-            {/* Wallet Balances */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-purple-400" />
-                Wallet Balances
-              </h3>
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                  <span className="text-gray-300">WCRO</span>
-                  <span className="font-mono font-semibold text-cyan-400">
-                    {walletBalances.CRO?.toFixed(4) || '0.0000'}
-                  </span>
+              {/* Wallet */}
+              <div className="glass-panel rounded-2xl p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Wallet className="w-3.5 h-3.5 text-white/40" />
+                  <span className="text-xs font-semibold text-white">Wallet</span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                  <span className="text-gray-300">TCRO</span>
-                  <span className="font-mono font-semibold text-green-400">
-                    {walletBalances.USDC?.toFixed(4) || '0.0000'}
-                  </span>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.04]">
+                    <span className="text-xs text-white/40">WCRO</span>
+                    <span className="font-mono font-semibold text-white text-sm">{walletBalances.CRO?.toFixed(4) || '0.0000'}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.04]">
+                    <span className="text-xs text-white/40">TCRO</span>
+                    <span className="font-mono font-semibold text-white text-sm">{walletBalances.USDC?.toFixed(4) || '0.0000'}</span>
+                  </div>
+                  <div className="flex justify-between items-center p-2.5 bg-white/[0.02] rounded-lg border border-white/[0.04]">
+                    <span className="text-xs text-white/40">Total</span>
+                    <span className="font-mono font-semibold text-white text-sm">${walletBalances.totalValue?.toFixed(2) || '0.00'}</span>
+                  </div>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-gray-800/50 rounded-lg">
-                  <span className="text-gray-300">Total Value</span>
-                  <span className="font-mono font-semibold text-blue-400">
-                    ${walletBalances.totalValue?.toFixed(2) || '0.00'}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <div className="text-xs text-gray-500 truncate">
-                  {address || 'Not connected'}
-                </div>
+                <div className="mt-2 text-[9px] text-white/15 truncate font-mono">{address || 'Not connected'}</div>
               </div>
             </div>
           </div>
 
-          {/* Fourth Row - Blockchain Event Monitor */}
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
+          {/* ═══ ROW 5: Blockchain Events ═══ */}
+          <div className="glass-panel rounded-2xl p-5">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-semibold flex items-center gap-2">
-                <Clock className="w-5 h-5 text-cyan-400" />
-                Smart Contract Event Monitor
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <Clock className="w-4 h-4 text-white/70" />
+                </div>
+                <h3 className="text-sm font-semibold text-white">Smart Contract Events</h3>
                 {blockchainStats.monitoring && (
-                  <span className="ml-2 px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  <span className="ml-1 px-2 py-0.5 bg-white/[0.06] text-white/60 text-[9px] rounded-full flex items-center gap-1 border border-white/[0.08]">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
                     Live
                   </span>
                 )}
-              </h3>
-              <div className="flex gap-4 text-sm text-gray-400">
-                <span>✅ Approved: <strong className="text-green-400">{blockchainStats.approved}</strong></span>
-                <span>🚫 Blocked: <strong className="text-red-400">{blockchainStats.blocked}</strong></span>
-                <span>💳 X402: <strong className="text-blue-400">{blockchainStats.x402Payments}</strong></span>
-                <span>📊 Total: <strong className="text-white">{blockchainStats.totalEvents}</strong></span>
+              </div>
+              <div className="flex gap-3 text-[10px] text-white/30 font-mono">
+                <span>✅ {blockchainStats.approved}</span>
+                <span>🚫 {blockchainStats.blocked}</span>
+                <span>💳 {blockchainStats.x402Payments}</span>
               </div>
             </div>
             
-            <div className="overflow-x-auto max-h-[500px] overflow-y-auto">
+            <div className="overflow-x-auto max-h-[400px] overflow-y-auto">
               <table className="w-full">
-                <thead className="sticky top-0 bg-gray-900/80 backdrop-blur-sm">
-                  <tr className="text-left text-gray-400 text-sm border-b border-gray-700">
-                    <th className="pb-3 pr-4">Time</th>
-                    <th className="pb-3 pr-4">Event</th>
-                    <th className="pb-3 pr-4">Agent</th>
-                    <th className="pb-3 pr-4">Amount</th>
-                    <th className="pb-3 pr-4">Status</th>
-                    <th className="pb-3 pr-4">Reason</th>
-                    <th className="pb-3">Tx</th>
+                <thead className="sticky top-0 bg-[#0a0a0a]/95 backdrop-blur-sm">
+                  <tr className="text-left text-[9px] uppercase tracking-wider text-white/25 border-b border-white/[0.04]">
+                    <th className="pb-2.5 pr-4">Time</th>
+                    <th className="pb-2.5 pr-4">Event</th>
+                    <th className="pb-2.5 pr-4">Agent</th>
+                    <th className="pb-2.5 pr-4">Amount</th>
+                    <th className="pb-2.5 pr-4">Status</th>
+                    <th className="pb-2.5 pr-4">Reason</th>
+                    <th className="pb-2.5">Tx</th>
                   </tr>
                 </thead>
                 <tbody>
                   {blockchainEvents.map((event, index) => (
-                    <tr key={`${event.txHash}-${index}`} className="border-b border-gray-800 hover:bg-gray-800/50">
-                      <td className="py-3 pr-4 text-sm">
-                        {new Date(event.timestamp).toLocaleTimeString()}
-                      </td>
-                      <td className="py-3 pr-4">
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                            event.type === "TransactionApproved"
-                              ? "bg-green-500/20 text-green-400"
-                              : event.type === "TransactionBlocked"
-                              ? "bg-red-500/20 text-red-400"
-                              : event.type === "X402PaymentApproved"
-                              ? "bg-blue-500/20 text-blue-400"
-                              : event.type === "ManualTradeExecuted"
-                              ? "bg-purple-500/20 text-purple-400"
-                              : "bg-gray-500/20 text-gray-400"
-                          }`}
-                        >
-                          {event.type === "TransactionApproved" ? "✅ APPROVED" :
-                           event.type === "TransactionBlocked" ? "🚫 BLOCKED" :
-                           event.type === "X402PaymentApproved" ? "💳 X402" :
-                           event.type === "ManualTradeExecuted" ? "🎯 MANUAL" :
-                           event.type}
+                    <tr key={`${event.txHash}-${index}`} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+                      <td className="py-2.5 pr-4 text-[11px] text-white/40 font-mono">{new Date(event.timestamp).toLocaleTimeString()}</td>
+                      <td className="py-2.5 pr-4">
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-semibold bg-white/[0.04] text-white/60 border border-white/[0.06]">
+                          {event.type === "TransactionApproved" ? "APPROVED" : event.type === "TransactionBlocked" ? "BLOCKED" : event.type === "X402PaymentApproved" ? "X402" : event.type === "ManualTradeExecuted" ? "MANUAL" : event.type}
                         </span>
                       </td>
-                      <td className="py-3 pr-4 font-mono text-xs">
-                        {event.agent ? `${event.agent.slice(0, 6)}...${event.agent.slice(-4)}` : '-'}
-                      </td>
-                      <td className="py-3 pr-4 font-mono">
-                        {event.amount ? `${parseFloat(event.amount).toFixed(4)} TCRO` : "-"}
-                      </td>
-                      <td className="py-3 pr-4">
-                        {event.type === "TransactionApproved" ? (
-                          <span className="text-green-400 text-sm">✓ Success</span>
-                        ) : event.type === "TransactionBlocked" ? (
-                          <span className="text-red-400 text-sm">✗ Blocked</span>
-                        ) : (
-                          <span className="text-blue-400 text-sm">● Paid</span>
-                        )}
-                      </td>
-                      <td className="py-3 pr-4 text-sm text-gray-400 max-w-xs truncate">
-                        {event.reason || event.service || '-'}
-                      </td>
-                      <td className="py-3">
+                      <td className="py-2.5 pr-4 font-mono text-[10px] text-white/30">{event.agent ? `${event.agent.slice(0, 6)}...${event.agent.slice(-4)}` : '-'}</td>
+                      <td className="py-2.5 pr-4 font-mono text-[11px] text-white/50">{event.amount ? `${parseFloat(event.amount).toFixed(4)}` : "-"}</td>
+                      <td className="py-2.5 pr-4 text-[10px] text-white/40">{event.type === "TransactionApproved" ? "✓" : event.type === "TransactionBlocked" ? "✗" : "●"}</td>
+                      <td className="py-2.5 pr-4 text-[10px] text-white/25 max-w-[200px] truncate">{event.reason || event.service || '-'}</td>
+                      <td className="py-2.5">
                         {event.txHash ? (
-                          <a
-                            href={`https://explorer.cronos.org/testnet/tx/${event.txHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-cyan-400 hover:text-cyan-300"
-                            title="View on Cronos Explorer"
-                          >
-                            <ExternalLink className="w-4 h-4" />
+                          <a href={`https://explorer.cronos.org/testnet/tx/${event.txHash}`} target="_blank" rel="noopener noreferrer" className="text-white/30 hover:text-white transition-colors">
+                            <ExternalLink className="w-3 h-3" />
                           </a>
-                        ) : (
-                          <span className="text-gray-600">-</span>
-                        )}
+                        ) : <span className="text-white/10">-</span>}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
               {blockchainEvents.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  {blockchainStats.monitoring ? (
-                    <div>
-                      <div className="animate-pulse mb-2">🔍 Listening to blockchain events...</div>
-                      <div className="text-sm">All SentinelClamp transactions will appear here in real-time</div>
-                    </div>
-                  ) : (
-                    <div>Event monitor initializing...</div>
-                  )}
+                <div className="text-center py-8 text-white/20">
+                  <p className="text-xs font-mono">{blockchainStats.monitoring ? 'Listening for events...' : 'Initializing...'}</p>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Agent Decision Log */}
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Bot className="w-5 h-5 text-purple-400" />
-              Agent Decision Log
-            </h3>
-            
-            <div className="space-y-4 max-h-[400px] overflow-y-auto">
-              {agentDecisions.length > 0 ? (
-                agentDecisions.map((decision, idx) => (
-                  <div
-                    key={idx}
-                    className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs text-gray-400">
-                        {new Date(decision.timestamp).toLocaleString()}
-                      </span>
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          decision.decision.includes("BUY")
-                            ? "bg-green-500/20 text-green-400"
-                            : decision.decision.includes("SELL")
-                            ? "bg-red-500/20 text-red-400"
-                            : "bg-gray-500/20 text-gray-400"
-                        }`}
-                      >
-                        {decision.decision}
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div>
-                        <span className="text-gray-400">Market Data: </span>
-                        <span className="text-gray-200">{decision.market_data}</span>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Sentinel Status: </span>
-                        <span className="text-gray-200">{decision.sentinel_status}</span>
-                      </div>
-                      <div className="pt-2 border-t border-gray-700">
-                        <span className="text-gray-400">Reason: </span>
-                        <span className="text-gray-200">{decision.reason}</span>
-                      </div>
-                    </div>
+          {/* ═══ ROW 6: AI Chat + Agent Decisions ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* AI Chat */}
+            <div className="glass-panel rounded-2xl p-5">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <MessageSquare className="w-4 h-4 text-white/70" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">AI Assistant</h3>
+                  <p className="text-[10px] text-white/30">Chat with 9 agents & MCP tools</p>
+                </div>
+              </div>
+              
+              <div className="bg-black/30 rounded-xl p-3 mb-3 h-[300px] overflow-y-auto space-y-2.5 border border-white/[0.03]">
+                {chatMessages.length === 0 ? (
+                  <div className="text-center py-10 text-white/15">
+                    <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                    <p className="text-xs">Start a conversation</p>
                   </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <Bot className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>No agent decisions yet.</p>
-                  <p className="text-sm mt-1">Start the AI agent to see decision logs here.</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* AI Agent Chat Interface */}
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-cyan-400" />
-              Chat with AI Agents & MCPs
-            </h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Ask questions about market data, sentiment analysis, Sentinel status, or trading strategies.
-              Our 9 AI agents and MCP tools are ready to help!
-            </p>
-            
-            {/* Chat Messages */}
-            <div className="bg-black/30 rounded-xl p-4 mb-4 h-[400px] overflow-y-auto space-y-3">
-              {chatMessages.length === 0 ? (
-                <div className="text-center py-12 text-gray-500">
-                  <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                  <p>No messages yet. Start a conversation!</p>
-                  <p className="text-xs mt-2">Try asking: "What's the current CRO price?" or "Should I buy now?"</p>
-                </div>
-              ) : (
-                chatMessages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div
-                      className={`max-w-[80%] rounded-lg p-3 ${
-                        msg.role === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-800 text-gray-200 border border-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        {msg.role === 'agent' && <Bot className="w-4 h-4 mt-1 flex-shrink-0 text-cyan-400" />}
-                        <div className="flex-1">
-                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                          <p className="text-xs opacity-60 mt-1">
-                            {new Date(msg.timestamp).toLocaleTimeString()}
-                          </p>
+                ) : (
+                  chatMessages.map((msg, idx) => (
+                    <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-[85%] rounded-xl p-2.5 ${msg.role === 'user' ? 'bg-white/[0.08] text-white border border-white/[0.08]' : 'bg-white/[0.03] text-white/70 border border-white/[0.04]'}`}>
+                        <div className="flex items-start gap-1.5">
+                          {msg.role === 'agent' && <Bot className="w-3 h-3 mt-0.5 flex-shrink-0 text-white/30" />}
+                          <div className="flex-1">
+                            <p className="text-[11px] whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                            <p className="text-[8px] text-white/20 mt-1 font-mono">{new Date(msg.timestamp).toLocaleTimeString()}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
-              )}
-              {isChatLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-800 rounded-lg p-3 border border-gray-700">
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
-                      <span className="text-sm text-gray-400">Agent is thinking...</span>
+                  ))
+                )}
+                {isChatLoading && (
+                  <div className="flex justify-start">
+                    <div className="bg-white/[0.03] rounded-xl p-2.5 border border-white/[0.04]">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-3 h-3 animate-spin text-white/30" />
+                        <span className="text-[10px] text-white/25">Thinking...</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              <div ref={chatEndRef} />
+                )}
+                <div ref={chatEndRef} />
+              </div>
+              
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSendChatMessage()}
+                  placeholder="Ask about markets, sentiment, or strategies..."
+                  className="flex-1 bg-white/[0.03] border border-white/[0.06] rounded-lg px-3 py-2 text-[11px] focus:outline-none focus:border-white/20 text-white placeholder-white/15 transition-colors"
+                  disabled={isChatLoading}
+                />
+                <button
+                  onClick={handleSendChatMessage}
+                  disabled={!chatInput.trim() || isChatLoading}
+                  className="bg-white/[0.08] hover:bg-white/[0.15] disabled:bg-white/[0.02] disabled:cursor-not-allowed px-3 py-2 rounded-lg flex items-center gap-1.5 transition-colors border border-white/[0.06]"
+                >
+                  <Send className="w-3.5 h-3.5 text-white/60" />
+                </button>
+              </div>
             </div>
-            
-            {/* Chat Input */}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleSendChatMessage()}
-                placeholder="Ask about market conditions, sentiment, or trading advice..."
-                className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-cyan-500"
-                disabled={isChatLoading}
-              />
-              <button
-                onClick={handleSendChatMessage}
-                disabled={!chatInput.trim() || isChatLoading}
-                className="bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-700 disabled:cursor-not-allowed px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
-              >
-                <Send className="w-4 h-4" />
-                Send
-              </button>
+
+            {/* Agent Decision Log */}
+            <div className="glass-panel rounded-2xl p-5">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <Bot className="w-4 h-4 text-white/70" />
+                </div>
+                <h3 className="text-sm font-semibold text-white">Decision Log</h3>
+              </div>
+              
+              <div className="space-y-2.5 max-h-[380px] overflow-y-auto">
+                {agentDecisions.length > 0 ? (
+                  agentDecisions.map((decision, idx) => (
+                    <div key={idx} className="bg-white/[0.02] rounded-xl p-3.5 border border-white/[0.04] hover:border-white/[0.08] transition-colors">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-[10px] text-white/25 font-mono">{new Date(decision.timestamp).toLocaleString()}</span>
+                        <span className="px-2 py-0.5 rounded-md text-[9px] font-semibold bg-white/[0.04] text-white/60 border border-white/[0.06]">
+                          {decision.decision}
+                        </span>
+                      </div>
+                      <div className="space-y-1 text-[10px]">
+                        <div><span className="text-white/25">Market: </span><span className="text-white/50">{decision.market_data}</span></div>
+                        <div><span className="text-white/25">Sentinel: </span><span className="text-white/50">{decision.sentinel_status}</span></div>
+                        <div className="pt-1.5 border-t border-white/[0.03]"><span className="text-white/25">Reason: </span><span className="text-white/40">{decision.reason}</span></div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-10 text-white/15">
+                    <Bot className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                    <p className="text-xs">No decisions yet</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Risk Controls Panel */}
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Sliders className="w-5 h-5 text-orange-400" />
-              Risk Controls & Safety Settings
-            </h3>
-            <p className="text-sm text-gray-400 mb-6">
-              Configure trading limits and risk parameters. All changes apply immediately to the autonomous agent.
-            </p>
-            
-            <div className="space-y-6">
-              {/* Daily Limit Slider */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-300">Daily Trade Limit</label>
-                  <span className="text-cyan-400 font-bold">{riskControls.dailyLimit} TCRO</span>
+          {/* ═══ ROW 7: Risk Controls + Explainable AI ═══ */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Risk Controls */}
+            <div className="glass-panel rounded-2xl p-5">
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <Sliders className="w-4 h-4 text-white/70" />
                 </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="10"
-                  step="0.5"
-                  value={riskControls.dailyLimit}
-                  onChange={(e) => updateRiskControls({ dailyLimit: parseFloat(e.target.value) })}
-                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>1 TCRO</span>
-                  <span>10 TCRO</span>
+                <div>
+                  <h3 className="text-sm font-semibold text-white">Risk Controls</h3>
+                  <p className="text-[10px] text-white/30">Configure trading limits and safety parameters</p>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Maximum total TCRO the agent can trade per day
-                </p>
               </div>
-
-              {/* Max Trade Size Slider */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-300">Max Trade Size</label>
-                  <span className="text-green-400 font-bold">{riskControls.maxTradeSize} TCRO</span>
+              
+              <div className="space-y-5">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-[11px] font-medium text-white/50">Daily Limit</label>
+                    <span className="text-white font-bold font-mono text-sm">{riskControls.dailyLimit} TCRO</span>
+                  </div>
+                  <input type="range" min="1" max="10" step="0.5" value={riskControls.dailyLimit} onChange={(e) => updateRiskControls({ dailyLimit: parseFloat(e.target.value) })} className="w-full h-1 bg-white/[0.06] rounded-lg appearance-none cursor-pointer" />
                 </div>
-                <input
-                  type="range"
-                  min="0.5"
-                  max="5"
-                  step="0.5"
-                  value={riskControls.maxTradeSize}
-                  onChange={(e) => updateRiskControls({ maxTradeSize: parseFloat(e.target.value) })}
-                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>0.5 TCRO</span>
-                  <span>5 TCRO</span>
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-[11px] font-medium text-white/50">Max Trade Size</label>
+                    <span className="text-white font-bold font-mono text-sm">{riskControls.maxTradeSize} TCRO</span>
+                  </div>
+                  <input type="range" min="0.5" max="5" step="0.5" value={riskControls.maxTradeSize} onChange={(e) => updateRiskControls({ maxTradeSize: parseFloat(e.target.value) })} className="w-full h-1 bg-white/[0.06] rounded-lg appearance-none cursor-pointer" />
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Maximum TCRO per single trade execution
-                </p>
-              </div>
-
-              {/* Stop Loss Percentage Slider */}
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-sm font-medium text-gray-300">Stop-Loss Threshold</label>
-                  <span className="text-red-400 font-bold">-{riskControls.stopLossPercent}%</span>
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-[11px] font-medium text-white/50">Stop-Loss</label>
+                    <span className="text-white font-bold font-mono text-sm">-{riskControls.stopLossPercent}%</span>
+                  </div>
+                  <input type="range" min="1" max="20" step="1" value={riskControls.stopLossPercent} onChange={(e) => updateRiskControls({ stopLossPercent: parseFloat(e.target.value) })} className="w-full h-1 bg-white/[0.06] rounded-lg appearance-none cursor-pointer" />
                 </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="20"
-                  step="1"
-                  value={riskControls.stopLossPercent}
-                  onChange={(e) => updateRiskControls({ stopLossPercent: parseFloat(e.target.value) })}
-                  className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer slider-thumb"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>-1%</span>
-                  <span>-20%</span>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Auto-exit position if price drops by this percentage
-                </p>
-              </div>
-
-              {/* Emergency Stop Toggle */}
-              <div className="pt-4 border-t border-gray-700">
-                <div className="flex items-center justify-between">
+                <div className="pt-3 border-t border-white/[0.04] flex items-center justify-between">
                   <div>
-                    <label className="text-sm font-medium text-gray-300">Emergency Stop Protection</label>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Allows manual intervention to halt all trading
-                    </p>
+                    <div className="text-[11px] font-medium text-white/50">Emergency Stop</div>
+                    <div className="text-[9px] text-white/20">Manual intervention to halt trading</div>
                   </div>
                   <button
                     onClick={() => updateRiskControls({ emergencyStopEnabled: !riskControls.emergencyStopEnabled })}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      riskControls.emergencyStopEnabled ? 'bg-green-500' : 'bg-gray-600'
-                    }`}
+                    className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors border ${riskControls.emergencyStopEnabled ? 'bg-white/20 border-white/30' : 'bg-white/[0.04] border-white/[0.08]'}`}
                   >
-                    <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        riskControls.emergencyStopEnabled ? 'translate-x-6' : 'translate-x-1'
-                      }`}
-                    />
+                    <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${riskControls.emergencyStopEnabled ? 'translate-x-5' : 'translate-x-1'}`} />
                   </button>
                 </div>
-              </div>
 
-              {/* Current Settings Summary */}
-              <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
-                <h4 className="text-sm font-semibold mb-3 text-gray-300">Active Risk Parameters</h4>
-                <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div>
-                    <span className="text-gray-500">Daily Limit:</span>
-                    <span className="ml-2 text-cyan-400 font-medium">{riskControls.dailyLimit} TCRO</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Max Trade:</span>
-                    <span className="ml-2 text-green-400 font-medium">{riskControls.maxTradeSize} TCRO</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Stop-Loss:</span>
-                    <span className="ml-2 text-red-400 font-medium">-{riskControls.stopLossPercent}%</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Safety:</span>
-                    <span className={`ml-2 font-medium ${riskControls.emergencyStopEnabled ? 'text-green-400' : 'text-gray-500'}`}>
-                      {riskControls.emergencyStopEnabled ? 'Enabled' : 'Disabled'}
-                    </span>
+                {/* Emergency Stop Button */}
+                <div className="pt-3 border-t border-white/[0.04]">
+                  <div className="flex gap-3">
+                    {agentStatus.is_running ? (
+                      <button
+                        onClick={handleEmergencyStop}
+                        disabled={isEmergencyStopping}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white/[0.04] text-white/60 border border-white/[0.08] rounded-xl font-semibold text-xs hover:bg-white/[0.08] transition-colors disabled:opacity-40"
+                      >
+                        {isEmergencyStopping ? <Loader2 className="w-4 h-4 animate-spin" /> : <Pause className="w-4 h-4" />}
+                        Emergency Stop
+                      </button>
+                    ) : (
+                      <button
+                        onClick={handleStartAgent}
+                        disabled={isEmergencyStopping}
+                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white text-black rounded-xl font-semibold text-xs hover:bg-white/90 transition-colors disabled:opacity-40 shadow-[0_0_15px_rgba(255,255,255,0.08)]"
+                      >
+                        {isEmergencyStopping ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                        Start Agent
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Explainable AI Panel */}
-          <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-            <h3 className="font-semibold mb-4 flex items-center gap-2">
-              <Activity className="w-5 h-5 text-purple-400" />
-              Explainable AI - Decision Breakdown
-            </h3>
-            <p className="text-sm text-gray-400 mb-6">
-              Full transparency into how our AI agent makes trading decisions. See exact reasoning, sentiment weights, and risk factors.
-            </p>
-            
-            {explainableAI ? (
-              <div className="space-y-6">
-                {/* Decision Summary */}
-                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl p-4 border border-purple-500/30">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="text-lg font-bold text-white mb-1">Decision: {(explainableAI?.decision || 'HOLD').toUpperCase()}</h4>
-                      <p className="text-xs text-gray-400">Based on multi-source analysis</p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-purple-400">{((explainableAI?.confidence || 0) * 100).toFixed(1)}%</div>
-                      <div className="text-xs text-gray-400">Confidence</div>
-                    </div>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-3">
-                    <div
-                      className="bg-gradient-to-r from-purple-500 to-blue-500 h-3 rounded-full transition-all"
-                      style={{ width: `${(explainableAI?.confidence || 0) * 100}%` }}
-                    />
-                  </div>
+            {/* Explainable AI */}
+            <div className="glass-panel rounded-2xl p-5">
+              <div className="flex items-center gap-2.5 mb-5">
+                <div className="p-1.5 bg-white/[0.04] rounded-lg border border-white/[0.06]">
+                  <Activity className="w-4 h-4 text-white/70" />
                 </div>
-
-                {/* Price Indicators */}
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-cyan-400" />
-                    Price Indicators
-                  </h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700">
-                      <div className="text-xs text-gray-500 mb-1">Current Price</div>
-                      <div className="text-lg font-bold text-cyan-400">${((explainableAI as any)?.price_indicators?.current_price || 0).toFixed(4)}</div>
-                    </div>
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700">
-                      <div className="text-xs text-gray-500 mb-1">24h Change</div>
-                      <div className={`text-lg font-bold ${(explainableAI as any)?.price_indicators?.change_24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {(explainableAI as any)?.price_indicators?.change_24h >= 0 ? '+' : ''}{((explainableAI as any)?.price_indicators?.change_24h || 0).toFixed(2)}%
+                  <h3 className="text-sm font-semibold text-white">Explainable AI</h3>
+                  <p className="text-[10px] text-white/30">Decision transparency & reasoning</p>
+                </div>
+              </div>
+              
+              {explainableAI ? (
+                <div className="space-y-4">
+                  {/* Decision */}
+                  <div className="bg-white/[0.03] rounded-xl p-4 border border-white/[0.06]">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <div className="text-base font-bold text-white">{(explainableAI?.decision || 'HOLD').toUpperCase()}</div>
+                        <div className="text-[9px] text-white/25">Multi-source analysis</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-white font-mono">{((explainableAI?.confidence || 0) * 100).toFixed(0)}%</div>
+                        <div className="text-[9px] text-white/25">Confidence</div>
                       </div>
                     </div>
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700">
-                      <div className="text-xs text-gray-500 mb-1">Moving Avg</div>
-                      <div className="text-lg font-bold text-blue-400">${((explainableAI as any)?.price_indicators?.moving_avg || 0).toFixed(4)}</div>
-                    </div>
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700">
-                      <div className="text-xs text-gray-500 mb-1">Trend</div>
-                      <div className="text-lg font-bold text-purple-400">{(explainableAI as any)?.price_indicators?.trend || 'N/A'}</div>
+                    <div className="w-full bg-white/[0.04] rounded-full h-1.5">
+                      <div className="bg-white/60 h-1.5 rounded-full transition-all" style={{ width: `${(explainableAI?.confidence || 0) * 100}%` }} />
                     </div>
                   </div>
-                </div>
 
-                {/* Sentiment Weights */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                    <Gauge className="w-4 h-4 text-green-400" />
-                    Sentiment Analysis Weights
-                  </h4>
-                  <div className="space-y-3">
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-400">CoinGecko Data</span>
-                        <span className="text-xs font-semibold text-white">{(((explainableAI as any)?.sentiment_weights?.coingecko || 25) / 100 * 100).toFixed(0)}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style={{ width: `${(explainableAI as any)?.sentiment_weights?.coingecko || 25}%` }} />
-                      </div>
+                  {/* Price Indicators */}
+                  <div className="grid grid-cols-4 gap-2">
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">Price</div>
+                      <div className="text-xs font-bold text-white font-mono">${((explainableAI as any)?.price_indicators?.current_price || 0).toFixed(4)}</div>
                     </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-400">News Sentiment</span>
-                        <span className="text-xs font-semibold text-white">{(((explainableAI as any)?.sentiment_weights?.news || 25) / 100 * 100).toFixed(0)}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full" style={{ width: `${(explainableAI as any)?.sentiment_weights?.news || 25}%` }} />
-                      </div>
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">24h Δ</div>
+                      <div className="text-xs font-bold text-white font-mono">{((explainableAI as any)?.price_indicators?.change_24h || 0).toFixed(2)}%</div>
                     </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-400">Social Media</span>
-                        <span className="text-xs font-semibold text-white">{(((explainableAI as any)?.sentiment_weights?.social_media || 25) / 100 * 100).toFixed(0)}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" style={{ width: `${(explainableAI as any)?.sentiment_weights?.social_media || 25}%` }} />
-                      </div>
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">MA</div>
+                      <div className="text-xs font-bold text-white font-mono">${((explainableAI as any)?.price_indicators?.moving_avg || 0).toFixed(4)}</div>
                     </div>
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-400">Technical Analysis</span>
-                        <span className="text-xs font-semibold text-white">{(((explainableAI as any)?.sentiment_weights?.technical || 25) / 100 * 100).toFixed(0)}%</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full" style={{ width: `${(explainableAI as any)?.sentiment_weights?.technical || 25}%` }} />
-                      </div>
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03]">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">Trend</div>
+                      <div className="text-xs font-bold text-white">{(explainableAI as any)?.price_indicators?.trend || 'N/A'}</div>
                     </div>
                   </div>
-                </div>
 
-                {/* Risk Factors */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-orange-400" />
-                    Risk Assessment
-                  </h4>
-                  <div className="grid grid-cols-3 gap-3">
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700 text-center">
-                      <div className="text-xs text-gray-500 mb-1">Volatility</div>
-                      <div className={`text-sm font-bold ${
-                        ((explainableAI as any)?.risk_assessment?.volatility || 'Medium') === 'Low' ? 'text-green-400' :
-                        ((explainableAI as any)?.risk_assessment?.volatility || 'Medium') === 'Medium' ? 'text-yellow-400' :
-                        'text-red-400'
-                      }`}>
-                        {(explainableAI as any)?.risk_assessment?.volatility || 'Medium'}
-                      </div>
+                  {/* Risk Factors */}
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03] text-center">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">Volatility</div>
+                      <div className="text-xs font-bold text-white">{(explainableAI as any)?.risk_assessment?.volatility || 'Med'}</div>
                     </div>
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700 text-center">
-                      <div className="text-xs text-gray-500 mb-1">Volume</div>
-                      <div className={`text-sm font-bold ${
-                        ((explainableAI as any)?.risk_assessment?.volume || 'Medium') === 'High' ? 'text-green-400' :
-                        ((explainableAI as any)?.risk_assessment?.volume || 'Medium') === 'Medium' ? 'text-yellow-400' :
-                        'text-red-400'
-                      }`}>
-                        {(explainableAI as any)?.risk_assessment?.volume || 'Medium'}
-                      </div>
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03] text-center">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">Volume</div>
+                      <div className="text-xs font-bold text-white">{(explainableAI as any)?.risk_assessment?.volume || 'Med'}</div>
                     </div>
-                    <div className="bg-black/30 rounded-lg p-3 border border-gray-700 text-center">
-                      <div className="text-xs text-gray-500 mb-1">Sentiment</div>
-                      <div className={`text-sm font-bold ${
-                        ((explainableAI as any)?.risk_assessment?.sentiment || 'Neutral') === 'Positive' ? 'text-green-400' :
-                        ((explainableAI as any)?.risk_assessment?.sentiment || 'Neutral') === 'Neutral' ? 'text-yellow-400' :
-                        'text-red-400'
-                      }`}>
-                        {(explainableAI as any)?.risk_assessment?.sentiment || 'Neutral'}
-                      </div>
+                    <div className="bg-white/[0.02] rounded-lg p-2.5 border border-white/[0.03] text-center">
+                      <div className="text-[8px] uppercase text-white/20 mb-0.5">Sentiment</div>
+                      <div className="text-xs font-bold text-white">{(explainableAI as any)?.risk_assessment?.sentiment || 'Neutral'}</div>
                     </div>
                   </div>
-                </div>
 
-                {/* Reasoning Breakdown */}
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3 flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-yellow-400" />
-                    Detailed Reasoning
-                  </h4>
-                  <div className="bg-black/30 rounded-lg p-4 border border-gray-700">
-                    <ul className="space-y-2">
-                      {(Array.isArray(explainableAI?.reasoning) 
-                        ? explainableAI.reasoning 
-                        : [explainableAI?.reasoning || 'No reasoning available']
-                      ).map((reason, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm text-gray-300">
-                          <span className="text-purple-400 mt-1">•</span>
+                  {/* Reasoning */}
+                  <div className="bg-white/[0.02] rounded-lg p-3 border border-white/[0.03]">
+                    <div className="text-[9px] uppercase tracking-wider text-white/20 mb-2">Reasoning</div>
+                    <ul className="space-y-1">
+                      {(Array.isArray(explainableAI?.reasoning) ? explainableAI.reasoning : [explainableAI?.reasoning || 'No reasoning available']).map((reason, idx) => (
+                        <li key={idx} className="flex items-start gap-1.5 text-[10px] text-white/40">
+                          <span className="text-white/15 mt-0.5">•</span>
                           <span>{reason}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
                 </div>
-
-                {/* Timestamp */}
-                <div className="text-xs text-gray-500 text-center pt-2 border-t border-gray-700">
-                  Last Updated: {new Date(explainableAI.timestamp).toLocaleString()}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-500">
-                <Activity className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>No AI decision data available yet.</p>
-                <p className="text-xs mt-2">Start the agent to see detailed reasoning and analysis.</p>
-              </div>
-            )}
-          </div>
-
-          {/* Fifth Row - Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Last Decision Card */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <Bot className="w-5 h-5 text-cyan-400" />
-                Last Trade Decision
-              </h3>
-              
-              {tradeHistory[0] && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
-                        tradeHistory[0].action === "sell"
-                          ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                          : tradeHistory[0].action === "buy"
-                          ? "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                          : "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-                      }`}
-                    >
-                      {(tradeHistory[0].action || 'hold').toUpperCase()}
-                    </span>
-                    <span className="text-gray-400 text-sm">
-                      {formatTime(tradeHistory[0].timestamp)}
-                    </span>
-                  </div>
-                  
-                  <p className="text-gray-300">{tradeHistory[0].reason || 'No reason provided'}</p>
-                  
-                  <div className="grid grid-cols-3 gap-4 pt-3 border-t border-gray-700">
-                    <div>
-                      <div className="text-gray-500 text-xs mb-1">Sentiment</div>
-                      <div className="font-semibold">{((tradeHistory[0].sentiment_score || 0) * 100).toFixed(0)}%</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-500 text-xs mb-1">Confidence</div>
-                      <div className="font-semibold">{((tradeHistory[0].confidence || 0) * 100).toFixed(0)}%</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-500 text-xs mb-1">Gas Cost</div>
-                      <div className="font-semibold">${(tradeHistory[0].gas_cost_usd || 0).toFixed(3)}</div>
-                    </div>
-                  </div>
+              ) : (
+                <div className="text-center py-10 text-white/15">
+                  <Activity className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                  <p className="text-xs">Start agent for AI analysis</p>
                 </div>
               )}
-            </div>
-
-            {/* Emergency Stop Card */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <h3 className="font-semibold mb-4 flex items-center gap-2">
-                <AlertTriangle className="w-5 h-5 text-red-400" />
-                Agent Controls
-              </h3>
-              
-              <div className="space-y-4">
-                <p className="text-gray-400 text-sm">
-                  Emergency stop will immediately halt all autonomous trading activity.
-                  The agent will need to be manually restarted.
-                </p>
-                
-                <div className="flex gap-4">
-                  {agentStatus.is_running ? (
-                    <button
-                      onClick={handleEmergencyStop}
-                      disabled={isEmergencyStopping}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500/20 text-red-400 border border-red-500/30 rounded-xl font-semibold hover:bg-red-500/30 transition-colors disabled:opacity-50"
-                    >
-                      {isEmergencyStopping ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Pause className="w-5 h-5" />
-                      )}
-                      Stop Agent
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleStartAgent}
-                      disabled={isEmergencyStopping}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-500/20 text-green-400 border border-green-500/30 rounded-xl font-semibold hover:bg-green-500/30 transition-colors disabled:opacity-50"
-                    >
-                      {isEmergencyStopping ? (
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                      ) : (
-                        <Play className="w-5 h-5" />
-                      )}
-                      Start Agent
-                    </button>
-                  )}
-                </div>
-                
-                <div className="text-xs text-gray-500 text-center">
-                  Agent persists across page refreshes - manually start/stop only
-                </div>
-              </div>
             </div>
           </div>
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-gray-800 mt-8 py-6 px-4 bg-black/80 backdrop-blur-sm">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-            <div>Sentinel Alpha Dashboard - Cronos x402 Hackathon</div>
+        <footer className="border-t border-white/[0.04] mt-6 py-5 px-5 bg-black/40 backdrop-blur-sm">
+          <div className="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3 text-[10px] text-white/20 font-mono">
+            <div>Sentinel AI · Cronos x402 Hackathon</div>
             <div className="flex gap-4">
-              <a
-                href="https://explorer.cronos.org/testnet"
-                target="_blank"
-                className="hover:text-white"
-              >
-                Cronos Explorer
-              </a>
-              <a
-                href="https://github.com/UjjwalCodes01/CSA"
-                target="_blank"
-                className="hover:text-white"
-              >
-                GitHub
-              </a>
+              <a href="https://explorer.cronos.org/testnet" target="_blank" className="hover:text-white/60 transition-colors">Explorer</a>
+              <a href="https://github.com/ayushkumartht/Brainwave" target="_blank" className="hover:text-white/60 transition-colors">GitHub</a>
             </div>
           </div>
         </footer>
