@@ -76,7 +76,21 @@ const tusdContract = new ethers.Contract(TUSD_ADDRESS, ERC20_ABI, provider);
 const app = express();
 
 app.use(cors({
-  origin: FRONTEND_URL,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    // Allow all localhost ports for local development
+    if (origin.match(/^http:\/\/localhost(:\d+)?$/) ||
+        origin.match(/^http:\/\/127\.0\.0\.1(:\d+)?$/) ||
+        origin === FRONTEND_URL) {
+      return callback(null, true);
+    }
+    // Allow Netlify deployments
+    if (origin.includes('netlify.app') || origin.includes('netlify.com')) {
+      return callback(null, true);
+    }
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 
@@ -439,9 +453,10 @@ app.post('/api/agent/start', async (req, res) => {
 
     console.log('🚀 Starting AI agent...');
     
-    // Spawn Python agent process (direct call to autonomous_trader.py to avoid interactive prompts)
+    // Spawn Python agent — use 'python' on Windows, 'python3' on Linux/Mac
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
     const aiAgentPath = path.join(__dirname, '../../ai-agent/src/autonomous_trader.py');
-    const pythonProcess = spawn('python3', [aiAgentPath], {
+    const pythonProcess = spawn(pythonCmd, [aiAgentPath], {
       cwd: path.join(__dirname, '../../ai-agent'),
       env: { ...process.env }
     });
@@ -527,9 +542,10 @@ app.post('/api/agent/execute-trade', async (req, res) => {
     
     console.log(`🎯 Executing trade with ${useCached ? 'cached' : 'fresh'} analysis...`);
     
-    // Spawn Python agent with execute-trade-only flag
+    // Spawn Python agent — use 'python' on Windows, 'python3' on Linux/Mac
+    const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
     const aiAgentPath = path.join(__dirname, '../../ai-agent/src/autonomous_trader.py');
-    const pythonProcess = spawn('python3', [aiAgentPath, '--execute-trade-only'], {
+    const pythonProcess = spawn(pythonCmd, [aiAgentPath, '--execute-trade-only'], {
       cwd: path.join(__dirname, '../../ai-agent'),
       env: { 
         ...process.env,
