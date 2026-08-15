@@ -1355,26 +1355,28 @@ export default function Dashboard() {
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}
-        <header className="border-b border-gray-800 bg-black/80 backdrop-blur-sm sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/" className="flex items-center gap-2">
-                <Image src="/logo.png" alt="Logo" width={40} height={40} className="rounded-full" />
-                <span className="font-bold text-xl bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                  CSA
+        <header className="border-b border-neutral-800 bg-black/90 backdrop-blur-md sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Link href="/" className="flex items-center gap-2.5">
+                <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold text-sm shadow-sm">
+                  S
+                </div>
+                <span className="font-bold text-lg text-white tracking-tight">
+                  Sentinel AI
                 </span>
               </Link>
-              <span className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-full border border-cyan-500/30">
-                Dashboard
+              <span className="px-2.5 py-0.5 bg-neutral-900 text-neutral-300 text-xs rounded-full border border-neutral-800 font-medium">
+                Terminal
               </span>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* Agent Status Indicator */}
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-900/50 backdrop-blur-sm border border-gray-700 rounded-full">
-                <div className={`w-2 h-2 rounded-full ${agentStatus.is_running ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-                <span className="text-xs text-gray-400">
-                  {agentStatus.is_running ? 'Agent Running' : 'Agent Stopped'}
+              <div className="flex items-center gap-2 px-3 py-1 bg-neutral-950 border border-neutral-800 rounded-full">
+                <div className={`w-2 h-2 rounded-full ${agentStatus.is_running ? 'bg-white animate-pulse' : 'bg-neutral-600'}`} />
+                <span className="text-xs text-neutral-300">
+                  {agentStatus.is_running ? 'Agent Active' : 'Agent Idle'}
                 </span>
               </div>
               
@@ -1382,10 +1384,10 @@ export default function Dashboard() {
               <button
                 onClick={agentStatus.is_running ? handleStopAgent : handleStartAgent}
                 disabled={isStartingAgent || isStoppingAgent}
-                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                className={`px-4 py-1.5 rounded-full font-semibold text-xs transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                   agentStatus.is_running
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30'
-                    : 'bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30'
+                    ? 'bg-neutral-900 text-white border border-neutral-700 hover:bg-neutral-800'
+                    : 'bg-white text-black hover:bg-neutral-200 shadow-sm'
                 }`}
               >
                 {isStartingAgent ? 'Starting...' : isStoppingAgent ? 'Stopping...' : agentStatus.is_running ? 'Stop Agent' : 'Start Agent'}
@@ -1394,45 +1396,31 @@ export default function Dashboard() {
               {/* How It Works Button */}
               <Link
                 href="/how-it-works"
-                className="px-4 py-2 bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 rounded-lg font-semibold text-sm transition-all flex items-center gap-2"
+                className="px-3.5 py-1.5 bg-neutral-950 text-neutral-300 border border-neutral-800 hover:text-white hover:border-neutral-600 rounded-full font-medium text-xs transition-all flex items-center gap-1.5"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                How It Works
+                Documentation
               </Link>
               
-              {/* WebSocket Status (if connected to backend) */}
-              {wsConnected && (
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-900/30 backdrop-blur-sm border border-blue-500/30 rounded-full">
-                  <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                  <span className="text-xs text-blue-400">Live Data</span>
-                </div>
-              )}
-              
               {isConnected && address && (
-                <div className="px-4 py-2 bg-green-900/30 backdrop-blur-sm border border-green-500/30 rounded-full">
-                  <p className="text-green-400 text-xs font-mono">
+                <div className="px-3 py-1 bg-neutral-900 border border-neutral-800 rounded-full">
+                  <p className="text-neutral-200 text-xs font-mono">
                     {address.slice(0, 6)}...{address.slice(-4)}
                   </p>
                 </div>
               )}
-              <div className="text-sm text-gray-400">
-                Last update: {formatTime(lastUpdate)}
-              </div>
               <button
                 onClick={loadData}
                 disabled={isRefreshing}
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-1.5 hover:bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors disabled:opacity-50"
                 title="Refresh data"
               >
-                <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
               <Link
                 href="/"
-                className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+                className="p-1.5 hover:bg-neutral-900 border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors"
               >
-                <Home className="w-5 h-5" />
+                <Home className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -1443,108 +1431,110 @@ export default function Dashboard() {
           {/* Top Row - Key Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* CRO Price Card */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-gray-400 text-sm">CRO Price</span>
-                <DollarSign className="w-5 h-5 text-cyan-400" />
+            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">CRO Price</span>
+                <DollarSign className="w-4 h-4 text-neutral-400" />
               </div>
-              <div className="text-3xl font-bold">${croPrice?.price ? croPrice.price.toFixed(4) : '0.0000'}</div>
-              <div className={`flex items-center gap-1 mt-2 text-sm ${(croPrice?.change_24h || 0) >= 0 ? "text-green-400" : "text-red-400"}`}>
-                {(croPrice?.change_24h || 0) >= 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
-                {Math.abs(croPrice?.change_24h || 0).toFixed(2)}% (24h)
+              <div className="text-3xl font-bold text-white tracking-tight">${croPrice?.price ? croPrice.price.toFixed(4) : '0.0000'}</div>
+              <div className="flex items-center gap-1 mt-2 text-xs font-mono text-neutral-400">
+                {(croPrice?.change_24h || 0) >= 0 ? <ArrowUp className="w-3.5 h-3.5 text-white" /> : <ArrowDown className="w-3.5 h-3.5 text-neutral-400" />}
+                <span>{Math.abs(croPrice?.change_24h || 0).toFixed(2)}% (24h)</span>
               </div>
             </div>
 
             {/* Sentiment Score Card */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
+            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-400 text-sm">Market Sentiment</span>
-                <Gauge className="w-5 h-5 text-blue-400" />
+                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">Market Sentiment</span>
+                <Gauge className="w-4 h-4 text-neutral-400" />
               </div>
               <SentimentGauge value={marketIntel.sentiment} signal={marketIntel.signal} />
-              <div className="text-center mt-2 text-sm text-gray-400">
+              <div className="text-center mt-2 text-xs text-neutral-400">
                 {marketIntel.sources || 0}/4 sources confirming
               </div>
             </div>
 
             {/* Agent Status Card */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-gray-400 text-sm">Agent Status</span>
-                <Bot className={`w-5 h-5 ${agentStatus.is_running ? "text-green-400" : "text-red-400"}`} />
+            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">Agent Status</span>
+                <Bot className="w-4 h-4 text-neutral-400" />
               </div>
               <div className="flex items-center gap-2 mb-2">
-                <div className={`w-3 h-3 rounded-full ${agentStatus.is_running ? "bg-green-400 animate-pulse" : "bg-red-400"}`} />
-                <span className="text-xl font-semibold">
+                <div className={`w-2.5 h-2.5 rounded-full ${agentStatus.is_running ? "bg-white animate-pulse" : "bg-neutral-600"}`} />
+                <span className="text-xl font-semibold text-white">
                   {agentStatus.is_running ? "Running" : "Stopped"}
                 </span>
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-xs text-neutral-400">
                 {agentStatus.is_running ? (
                   <>Next cycle in {formatCountdown(agentStatus.next_cycle_in)}</>
                 ) : (
                   <>Click Start to begin trading</>
                 )}
               </div>
-              <div className="text-xs text-gray-500 mt-1">
+              <div className="text-xs text-neutral-500 mt-1">
                 Total cycles: {agentStatus.total_cycles}
               </div>
             </div>
 
             {/* Sentinel Status Card */}
-            <div className="bg-gray-900/80 backdrop-blur-sm rounded-2xl p-6 border border-gray-800">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-gray-400 text-sm">Sentinel Limit</span>
-                <Shield className="w-5 h-5 text-purple-400" />
+            <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-5 border border-neutral-800">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-neutral-400 text-xs uppercase tracking-wider font-medium">Sentinel Limit</span>
+                <Shield className="w-4 h-4 text-neutral-400" />
               </div>
-              <div className="text-3xl font-bold">{sentinelStatus.remaining?.toFixed(2) || '0.00'} CRO</div>
-              <div className="w-full bg-gray-700 rounded-full h-2 mt-3">
+              <div className="text-3xl font-bold text-white tracking-tight">{sentinelStatus.remaining?.toFixed(2) || '0.00'} CRO</div>
+              <div className="w-full bg-neutral-800 rounded-full h-1.5 mt-3">
                 <div
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full"
+                  className="bg-white h-1.5 rounded-full"
                   style={{ width: `${((sentinelStatus.remaining || 0) / (sentinelStatus.daily_limit || 1)) * 100}%` }}
                 />
               </div>
-              <div className="text-sm text-gray-400 mt-2">
+              <div className="text-xs text-neutral-400 mt-2">
                 {sentinelStatus.spent_today?.toFixed(2) || '0.00'} / {sentinelStatus.daily_limit?.toFixed(2) || '0.00'} used today
               </div>
             </div>
           </div>
 
           {/* Manual Trade Panel */}
-          <div className="bg-gradient-to-br from-cyan-900/20 to-blue-900/20 backdrop-blur-sm rounded-2xl p-6 border border-cyan-500/30">
+          <div className="bg-neutral-950/90 backdrop-blur-sm rounded-2xl p-6 border border-neutral-800">
             <div className="flex items-center gap-3 mb-6">
-              <Zap className="w-7 h-7 text-cyan-400" />
+              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">Manual Trade Execution</h3>
-                <p className="text-sm text-gray-400">Execute test trades instantly for demo</p>
+                <h3 className="text-base font-semibold text-white">Manual Trade Execution</h3>
+                <p className="text-xs text-neutral-400">Execute test swaps instantly on Cronos Testnet</p>
               </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               {/* Direction Selector */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Direction</label>
+                <label className="block text-xs font-medium text-neutral-400 mb-2">Direction</label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setManualTradeDirection('buy')}
-                    className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
+                    className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
                       manualTradeDirection === 'buy'
-                        ? 'bg-green-500/30 text-green-400 border-2 border-green-500'
-                        : 'bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700'
+                        ? 'bg-white text-black border border-white shadow-sm'
+                        : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:bg-neutral-800 hover:text-white'
                     }`}
                   >
-                    <ArrowUp className="w-4 h-4 inline mr-1" />
+                    <ArrowUp className="w-3.5 h-3.5 inline mr-1" />
                     Buy WCRO
                   </button>
                   <button
                     onClick={() => setManualTradeDirection('sell')}
-                    className={`flex-1 py-2 px-3 rounded-lg font-semibold transition-all ${
+                    className={`flex-1 py-2 px-3 rounded-lg font-semibold text-xs transition-all ${
                       manualTradeDirection === 'sell'
-                        ? 'bg-red-500/30 text-red-400 border-2 border-red-500'
-                        : 'bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700'
+                        ? 'bg-white text-black border border-white shadow-sm'
+                        : 'bg-neutral-900 text-neutral-400 border border-neutral-800 hover:bg-neutral-800 hover:text-white'
                     }`}
                   >
-                    <ArrowDown className="w-4 h-4 inline mr-1" />
+                    <ArrowDown className="w-3.5 h-3.5 inline mr-1" />
                     Sell WCRO
                   </button>
                 </div>
@@ -1552,26 +1542,26 @@ export default function Dashboard() {
               
               {/* Amount Input */}
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Amount (TCRO/WCRO)</label>
+                <label className="block text-xs font-medium text-neutral-400 mb-2">Amount (TCRO/WCRO)</label>
                 <input
                   type="number"
                   value={manualTradeAmount}
                   onChange={(e) => setManualTradeAmount(e.target.value)}
                   step="0.1"
                   min="0.01"
-                  className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+                  className="w-full px-3.5 py-2 bg-neutral-900 border border-neutral-800 rounded-lg text-white text-sm focus:outline-none focus:border-white transition-colors"
                   placeholder="0.1"
                 />
               </div>
               
               {/* Trade Info */}
               <div className="flex flex-col justify-end">
-                <div className="bg-gray-800/50 rounded-lg p-3 border border-gray-700">
-                  <div className="text-xs text-gray-400 mb-1">Estimated Output</div>
-                  <div className="text-white font-semibold">
-                    ~{(parseFloat(manualTradeAmount) * 0.98).toFixed(4)} {manualTradeDirection === 'buy' ? 'WCRO' : 'TCRO'}
+                <div className="bg-neutral-900/60 rounded-lg p-2.5 border border-neutral-800">
+                  <div className="text-xs text-neutral-400 mb-0.5">Estimated Output</div>
+                  <div className="text-white text-sm font-semibold">
+                    ~{(parseFloat(manualTradeAmount || '0') * 0.98).toFixed(4)} {manualTradeDirection === 'buy' ? 'WCRO' : 'TCRO'}
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">20% slippage</div>
+                  <div className="text-[10px] text-neutral-500">Slippage protected</div>
                 </div>
               </div>
               
@@ -1579,17 +1569,17 @@ export default function Dashboard() {
               <div className="flex items-end">
                 <button
                   onClick={handleManualTrade}
-                  disabled={isExecutingTrade || !isConnected || parseFloat(manualTradeAmount) <= 0}
-                  className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white rounded-xl font-semibold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  disabled={isExecutingTrade || !isConnected || parseFloat(manualTradeAmount || '0') <= 0}
+                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 bg-white hover:bg-neutral-200 text-black rounded-lg font-semibold text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-md"
                 >
                   {isExecutingTrade ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       Executing...
                     </>
                   ) : (
                     <>
-                      <Zap className="w-5 h-5" />
+                      <Zap className="w-4 h-4" />
                       Execute Trade
                     </>
                   )}
@@ -1598,26 +1588,26 @@ export default function Dashboard() {
             </div>
             
             {!isConnected && (
-              <div className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg flex items-center gap-2 text-yellow-400 text-sm">
-                <AlertTriangle className="w-4 h-4" />
-                Connect your wallet to execute manual trades
+              <div className="mt-4 p-3 bg-neutral-900/80 border border-neutral-800 rounded-lg flex items-center gap-2 text-neutral-300 text-xs">
+                <AlertTriangle className="w-4 h-4 text-white" />
+                Connect your wallet above to execute test trades on Cronos Testnet
               </div>
             )}
           </div>
 
-          {/* CDC Price Comparison Panel - Crypto.com Integration */}
-          <div className="bg-gradient-to-br from-purple-900/20 to-pink-900/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30">
+          {/* CDC Price Comparison Panel */}
+          <div className="bg-neutral-950/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-800">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-500/20 rounded-lg">
-                  <TrendingUp className="w-6 h-6 text-purple-400" />
+                <div className="p-2 bg-neutral-900 rounded-lg border border-neutral-800">
+                  <TrendingUp className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-white">Price Comparison</h3>
-                  <p className="text-sm text-gray-400">Multi-source price aggregation</p>
+                  <h3 className="text-base font-semibold text-white">Price Comparison</h3>
+                  <p className="text-xs text-neutral-400">Multi-source price aggregation</p>
                 </div>
               </div>
-              <div className="bg-purple-500/10 px-3 py-1 rounded-full border border-purple-500/30">
+              <div className="bg-neutral-900 px-3 py-1 rounded-full border border-neutral-800 text-xs text-neutral-300">
                 <span className="text-xs font-semibold text-purple-400">Powered by Crypto.com</span>
               </div>
             </div>
