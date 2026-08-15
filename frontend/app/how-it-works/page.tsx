@@ -28,12 +28,12 @@ export default function HowItWorksPage() {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-3"
           >
-            <div className="w-10 h-10 bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/50">
-              <span className="text-white font-bold text-lg">S</span>
+            <div className="w-9 h-9 bg-white text-black rounded-lg flex items-center justify-center font-bold text-base shadow-sm">
+              S
             </div>
             <div>
-              <span className="text-white font-bold text-xl block">Sentinel AI</span>
-              <span className="text-gray-400 text-xs">Autonomous Trading</span>
+              <span className="text-white font-semibold text-lg tracking-tight block">Sentinel AI</span>
+              <span className="text-neutral-400 text-xs tracking-wider uppercase">System Documentation</span>
             </div>
           </motion.div>
 
@@ -44,14 +44,14 @@ export default function HowItWorksPage() {
           >
             <Link
               href="/"
-              className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+              className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-sm"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
               <span>Back to Home</span>
             </Link>
             <Link
               href="/dashboard"
-              className="px-6 py-2 bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 rounded-full text-white font-semibold shadow-lg shadow-indigo-500/30 transform hover:scale-105"
+              className="px-5 py-2 bg-white hover:bg-neutral-200 text-black text-xs font-semibold rounded-full transition-all duration-200 shadow-md"
             >
               View Dashboard
             </Link>
