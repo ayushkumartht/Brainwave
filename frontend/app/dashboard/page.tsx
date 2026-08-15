@@ -1338,20 +1338,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Background Vortex */}
-      {mounted && (
-        <div className="fixed inset-0 z-0">
-          <Vortex
-            backgroundColor="black"
-            rangeY={1200}
-            particleCount={200}
-            baseHue={220}
-            baseSpeed={0.1}
-            className="w-full h-full opacity-30"
-          />
-        </div>
-      )}
-
       {/* Content */}
       <div className="relative z-10">
         {/* Header */}

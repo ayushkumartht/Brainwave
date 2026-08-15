@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-import { Vortex } from "@/components/ui/vortex";
 import { useRouter } from "next/navigation";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import toast from "react-hot-toast";
@@ -73,8 +72,11 @@ export default function LandingPage() {
 
   return (
     <div className="w-full min-h-screen bg-black text-white overflow-x-hidden relative selection:bg-white selection:text-black">
+      {/* Subtle Minimal Grid Background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#111_1px,transparent_1px),linear-gradient(to_bottom,#111_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none opacity-40" />
+
       {/* Minimal Top Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4 backdrop-blur-md bg-black/60 border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4 backdrop-blur-md bg-black/80 border-b border-neutral-900">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -130,121 +132,113 @@ export default function LandingPage() {
       </header>
 
       {/* Hero Section */}
-      <div className="relative w-full min-h-screen flex items-center justify-center pt-20 pb-16">
-        <Vortex
-          backgroundColor="black"
-          rangeY={800}
-          particleCount={350}
-          baseHue={0}
-          className="flex items-center flex-col justify-center px-4 md:px-10 py-12 w-full min-h-screen"
+      <div className="relative w-full min-h-screen flex items-center justify-center pt-24 pb-16 px-4 md:px-10 z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="text-center max-w-4xl mx-auto"
         >
+          {/* Minimal Badge */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 bg-neutral-950 mb-8"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+            <span className="text-xs tracking-wide uppercase text-neutral-300 font-medium">Cronos EVM Testnet Live</span>
+          </motion.div>
+
+          {/* Main Headline */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white"
+          >
+            Autonomous DeFi.
+            <br />
+            <span className="text-neutral-500 font-light">Guarded on-chain.</span>
+          </motion.h1>
+
+          {/* Subtitle */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-neutral-400 text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-normal"
+          >
+            A 24/7 multi-agent trading council with real-time NLP sentiment analysis,
+            strict SentinelClamp spending safety, and autonomous testnet execution.
+          </motion.p>
+
+          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center max-w-4xl mx-auto"
+            transition={{ delay: 0.7 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
           >
-            {/* Minimal Badge */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/15 bg-white/[0.04] mb-8"
+            <button 
+              onClick={handleLaunchTerminal}
+              className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-neutral-200 text-black font-semibold rounded-full transition-all duration-200 shadow-xl flex items-center justify-center gap-2 group"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-              <span className="text-xs tracking-wide uppercase text-neutral-300 font-medium">Cronos EVM Testnet Live</span>
-            </motion.div>
-
-            {/* Main Headline */}
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white"
+              <span>Launch Terminal</span>
+              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            </button>
+            
+            <Link 
+              href="/how-it-works"
+              className="w-full sm:w-auto px-7 py-3.5 bg-neutral-950 hover:bg-neutral-900 text-neutral-200 hover:text-white font-medium rounded-full border border-neutral-800 hover:border-neutral-600 transition-all flex items-center justify-center gap-2"
             >
-              Autonomous DeFi.
-              <br />
-              <span className="text-neutral-400 font-light">Guarded on-chain.</span>
-            </motion.h1>
-
-            {/* Subtitle */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-neutral-400 text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-normal"
-            >
-              A 24/7 multi-agent trading council with real-time NLP sentiment analysis,
-              strict SentinelClamp spending safety, and autonomous testnet execution.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-            >
-              <button 
-                onClick={handleLaunchTerminal}
-                className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-neutral-200 text-black font-semibold rounded-full transition-all duration-200 shadow-xl flex items-center justify-center gap-2 group"
-              >
-                <span>Launch Terminal</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </button>
-              
-              <Link 
-                href="/how-it-works"
-                className="w-full sm:w-auto px-7 py-3.5 bg-neutral-950 hover:bg-neutral-900 text-neutral-200 hover:text-white font-medium rounded-full border border-neutral-800 hover:border-neutral-600 transition-all flex items-center justify-center gap-2"
-              >
-                <span>System Architecture</span>
-                <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
-              </Link>
-            </motion.div>
-
-            {/* Feature Cards Grid */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.9 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-4xl mx-auto"
-            >
-              <div className="p-5 rounded-2xl border border-white/10 bg-neutral-950/60 backdrop-blur-md">
-                <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
-                  <Shield className="w-4 h-4 text-white" />
-                </div>
-                <h3 className="text-white font-semibold text-sm mb-1">SentinelClamp Guard</h3>
-                <p className="text-neutral-400 text-xs leading-relaxed">
-                  Smart contract limits daily spending autonomously so AI never over-trades your funds.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-white/10 bg-neutral-950/60 backdrop-blur-md">
-                <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
-                  <Activity className="w-4 h-4 text-white" />
-                </div>
-                <h3 className="text-white font-semibold text-sm mb-1">VADER NLP & RSS Feed</h3>
-                <p className="text-neutral-400 text-xs leading-relaxed">
-                  Keyless real-time market sentiment parsing across CoinGecko and live CryptoPanic feeds.
-                </p>
-              </div>
-
-              <div className="p-5 rounded-2xl border border-white/10 bg-neutral-950/60 backdrop-blur-md">
-                <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
-                  <Terminal className="w-4 h-4 text-white" />
-                </div>
-                <h3 className="text-white font-semibold text-sm mb-1">Multi-Agent Voting</h3>
-                <p className="text-neutral-400 text-xs leading-relaxed">
-                  3 AI agents (Risk Manager, Market Analyst, Executioner) form consensus on every swap.
-                </p>
-              </div>
-            </motion.div>
+              <span>System Architecture</span>
+              <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
+            </Link>
           </motion.div>
-        </Vortex>
+
+          {/* Feature Cards Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-4xl mx-auto"
+          >
+            <div className="p-5 rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md hover:border-neutral-700 transition-all">
+              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
+                <Shield className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-white font-semibold text-sm mb-1">SentinelClamp Guard</h3>
+              <p className="text-neutral-400 text-xs leading-relaxed">
+                Smart contract limits daily spending autonomously so AI never over-trades your funds.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md hover:border-neutral-700 transition-all">
+              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
+                <Activity className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-white font-semibold text-sm mb-1">VADER NLP & RSS Feed</h3>
+              <p className="text-neutral-400 text-xs leading-relaxed">
+                Keyless real-time market sentiment parsing across CoinGecko and live CryptoPanic feeds.
+              </p>
+            </div>
+
+            <div className="p-5 rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md hover:border-neutral-700 transition-all">
+              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
+                <Terminal className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-white font-semibold text-sm mb-1">Multi-Agent Voting</h3>
+              <p className="text-neutral-400 text-xs leading-relaxed">
+                3 AI agents (Risk Manager, Market Analyst, Executioner) form consensus on every swap.
+              </p>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       {/* Minimal Footer */}
-      <footer className="border-t border-neutral-900 py-6 px-6 bg-black text-center">
+      <footer className="border-t border-neutral-900 py-6 px-6 bg-black text-center relative z-10">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
           <p>© 2026 Sentinel AI Trader. Built on Cronos EVM.</p>
           <div className="flex items-center gap-6">

@@ -59,13 +59,7 @@ export default function HowItWorksPage() {
         </div>
       </div>
 
-      <Vortex
-        backgroundColor="black"
-        rangeY={800}
-        particleCount={600}
-        baseHue={220}
-        className="flex items-start flex-col justify-start px-4 md:px-10 py-20 w-full min-h-screen"
-      >
+      <div className="flex items-start flex-col justify-start px-4 md:px-10 py-24 w-full min-h-screen max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -650,7 +644,7 @@ export default function HowItWorksPage() {
             </Link>
           </div>
         </motion.div>
-      </Vortex>
+      </div>
     </div>
   );
 }
