@@ -4,9 +4,25 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import toast from "react-hot-toast";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Link from "next/link";
-import { Shield, Zap, Terminal, Activity, ArrowRight, Github, ExternalLink } from "lucide-react";
+import { 
+  Shield, 
+  Zap, 
+  Terminal, 
+  Activity, 
+  ArrowRight, 
+  Github, 
+  ExternalLink,
+  Bot,
+  TrendingUp,
+  Cpu,
+  Lock,
+  Globe,
+  Sliders,
+  CheckCircle2,
+  DollarSign
+} from "lucide-react";
 
 export default function LandingPage() {
   const router = useRouter();
@@ -14,28 +30,37 @@ export default function LandingPage() {
   const { connect, connectors } = useConnect();
   const { disconnect } = useDisconnect();
 
-  // Track if we've already shown the connect toast this session
-  const [hasShownConnectToast, setHasShownConnectToast] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('walletConnectToastShown') === 'true';
-    }
-    return false;
-  });
+  // Sentiment Simulator State
+  const [simulationText, setSimulationText] = useState("CRO is looking incredibly bullish today, expecting a massive breakout!");
+  const [simulatedScore, setSimulatedScore] = useState(0.85);
+  const [simulatedSignal, setSimulatedSignal] = useState("BUY");
+
+  const runSimulation = (text: string) => {
+    let score = 0.5;
+    const lower = text.toLowerCase();
+    
+    // Simple sentiment analyzer
+    const positiveWords = ["bullish", "breakout", "buy", "up", "green", "moon", "good", "great", "pump", "undervalued"];
+    const negativeWords = ["bearish", "dump", "sell", "down", "red", "bad", "crash", "risk", "liquidate", "overvalued"];
+    
+    positiveWords.forEach(w => {
+      if (lower.includes(w)) score += 0.15;
+    });
+    negativeWords.forEach(w => {
+      if (lower.includes(w)) score -= 0.15;
+    });
+    
+    score = Math.max(0.05, Math.min(0.95, score));
+    setSimulatedScore(score);
+    
+    if (score > 0.65) setSimulatedSignal("BUY");
+    else if (score < 0.35) setSimulatedSignal("SELL");
+    else setSimulatedSignal("HOLD");
+  };
 
   useEffect(() => {
-    if (isConnected && address && !hasShownConnectToast) {
-      toast.success(`Wallet connected: ${address.slice(0, 6)}...${address.slice(-4)}`, {
-        duration: 3000,
-      });
-      setHasShownConnectToast(true);
-      sessionStorage.setItem('walletConnectToastShown', 'true');
-    }
-    
-    if (!isConnected && hasShownConnectToast) {
-      setHasShownConnectToast(false);
-      sessionStorage.removeItem('walletConnectToastShown');
-    }
-  }, [isConnected, address, hasShownConnectToast]);
+    runSimulation(simulationText);
+  }, [simulationText]);
 
   const handleConnect = async () => {
     try {
@@ -71,50 +96,45 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-black text-white overflow-x-hidden relative selection:bg-white selection:text-black">
-      {/* Subtle Minimal Grid Background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#111_1px,transparent_1px),linear-gradient(to_bottom,#111_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none opacity-40" />
+    <div className="w-full min-h-screen bg-[#030303] text-white overflow-x-hidden relative selection:bg-white selection:text-black font-sans">
+      {/* Dynamic light glows in background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.03)_0%,transparent_70%)]" />
+        <div className="absolute bottom-[20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.02)_0%,transparent_60%)]" />
+      </div>
 
-      {/* Minimal Top Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4 backdrop-blur-md bg-black/80 border-b border-neutral-900">
+      {/* Floating Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4 backdrop-blur-2xl bg-black/40 border-b border-white/[0.04]">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3"
-          >
-            <div className="w-9 h-9 bg-white text-black rounded-lg flex items-center justify-center font-bold text-base shadow-sm">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-9 h-9 bg-white text-black rounded-lg flex items-center justify-center font-bold text-base shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-105 transition-all">
               S
             </div>
             <div>
               <span className="text-white font-semibold text-lg tracking-tight block">Sentinel AI</span>
-              <span className="text-neutral-400 text-xs tracking-wider uppercase">Cronos Autonomous Trader</span>
+              <span className="text-white/45 text-[9px] uppercase tracking-widest font-mono">Cronos Autonomous Trading Network</span>
             </div>
-          </motion.div>
+          </Link>
           
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-4"
-          >
+          <div className="flex items-center gap-5">
             <Link 
               href="/how-it-works"
-              className="text-sm text-neutral-400 hover:text-white transition-colors hidden sm:block"
+              className="text-xs font-semibold text-white/50 hover:text-white uppercase tracking-wider transition-colors hidden sm:block"
             >
-              Documentation
+              Docs
             </Link>
 
             {isConnected && address ? (
               <div className="flex items-center gap-3">
-                <div className="px-3 py-1.5 bg-neutral-900 border border-neutral-700 rounded-full flex items-center gap-2">
-                  <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                  <span className="text-neutral-200 text-xs font-mono">
+                <div className="px-3 py-1.5 bg-white/[0.03] border border-white/[0.08] rounded-full flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                  <span className="text-white/70 text-xs font-mono">
                     {address.slice(0, 6)}...{address.slice(-4)}
                   </span>
                 </div>
                 <button 
                   onClick={handleDisconnect}
-                  className="px-4 py-1.5 bg-neutral-900 hover:bg-neutral-800 border border-neutral-700 text-neutral-300 hover:text-white text-xs font-medium rounded-full transition-all"
+                  className="px-4 py-1.5 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] text-white/80 hover:text-white text-xs font-semibold rounded-full transition-all"
                 >
                   Disconnect
                 </button>
@@ -122,133 +142,328 @@ export default function LandingPage() {
             ) : (
               <button 
                 onClick={handleConnect}
-                className="px-5 py-2 bg-white hover:bg-neutral-200 text-black text-xs font-semibold rounded-full transition-all duration-200 shadow-md transform hover:scale-105"
+                className="px-5 py-2 bg-white hover:bg-white/90 text-black text-xs font-bold rounded-full transition-all duration-200 shadow-[0_0_20px_rgba(255,255,255,0.15)]"
               >
                 Connect Wallet
               </button>
             )}
-          </motion.div>
+          </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="relative w-full min-h-screen flex items-center justify-center pt-24 pb-16 px-4 md:px-10 z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="text-center max-w-4xl mx-auto"
-        >
-          {/* Minimal Badge */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-neutral-800 bg-neutral-950 mb-8"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-            <span className="text-xs tracking-wide uppercase text-neutral-300 font-medium">Cronos EVM Testnet Live</span>
-          </motion.div>
+      {/* ═══ SECTION 1: HERO ═══ */}
+      <section className="relative w-full min-h-screen flex flex-col justify-center pt-32 pb-16 px-6 z-10 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7 text-left space-y-6">
+            {/* Live Indicator Pill */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/[0.08] bg-white/[0.02]"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span className="text-[10px] tracking-widest uppercase text-white/60 font-mono">Cronos EVM Live Simulator</span>
+            </motion.div>
 
-          {/* Main Headline */}
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white"
-          >
-            Autonomous DeFi.
-            <br />
-            <span className="text-neutral-500 font-light">Guarded on-chain.</span>
-          </motion.h1>
+            {/* Headline */}
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-[1.08] font-sans">
+              Autonomous Trade.<br />
+              <span className="text-white/40 font-light">Safe on-chain guard.</span>
+            </h1>
 
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-neutral-400 text-base md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-normal"
-          >
-            A 24/7 multi-agent trading council with real-time NLP sentiment analysis,
-            strict SentinelClamp spending safety, and autonomous testnet execution.
-          </motion.p>
+            {/* Subtitle */}
+            <p className="text-white/50 text-base md:text-lg max-w-xl leading-relaxed">
+              Experience the first fully autonomous multi-agent portfolio optimizer. 
+              Driven by a 3-agent consensus council, NLP news metrics, and guarded by 
+              on-chain smart limits.
+            </p>
 
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-          >
+            {/* CTA Actions */}
+            <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
+              <button 
+                onClick={handleLaunchTerminal}
+                className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-white/90 text-black font-bold rounded-full transition-all flex items-center justify-center gap-2 group shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+              >
+                <span>Launch Terminal</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+              
+              <Link 
+                href="/how-it-works"
+                className="w-full sm:w-auto px-7 py-3.5 bg-white/[0.03] hover:bg-white/[0.08] text-white/80 hover:text-white font-semibold rounded-full border border-white/[0.08] transition-all flex items-center justify-center gap-2"
+              >
+                <span>Docs & Architecture</span>
+                <ExternalLink className="w-3.5 h-3.5 text-white/40" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Interactive Live Ticker Panel on the Right */}
+          <div className="lg:col-span-5 relative">
+            <div className="glass-panel rounded-2xl p-6 relative border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+              <div className="flex items-center justify-between mb-4 border-b border-white/[0.04] pb-3">
+                <span className="text-[10px] tracking-wider uppercase text-white/40 font-mono">Live Simulation</span>
+                <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] text-emerald-400 font-mono font-bold animate-pulse">
+                  ONLINE
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/[0.04]">
+                  <span className="text-xs text-white/60">Simulated Price</span>
+                  <span className="text-sm font-bold text-white font-mono">$0.0482 CRO</span>
+                </div>
+
+                <div className="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/[0.04]">
+                  <span className="text-xs text-white/60">Sentiment Oracles</span>
+                  <span className="text-sm font-bold text-cyan-400 font-mono">VADER NLP + RSS</span>
+                </div>
+
+                <div className="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/[0.04]">
+                  <span className="text-xs text-white/60">Risk Guard Status</span>
+                  <span className="text-sm font-bold text-emerald-400 font-mono flex items-center gap-1">
+                    <Shield className="w-3.5 h-3.5" /> CLAMP_OK
+                  </span>
+                </div>
+
+                {/* Looping ticker values mock */}
+                <div className="h-24 bg-black/40 rounded-lg p-3 border border-white/[0.04] font-mono text-[10px] space-y-1 overflow-hidden">
+                  <div className="text-emerald-400">[01:24:02] VADER: CRO positive sentiment +0.72</div>
+                  <div className="text-white/60">[01:24:15] Council voting: 2 BUY, 1 HOLD</div>
+                  <div className="text-emerald-400">[01:24:20] EXEC: Wrap 0.5 CRO to WCRO - SUCCESS</div>
+                  <div className="text-white/30">[01:24:35] Sentinel clamp daily usage: 1.2/10.0</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 2: DYNAMIC SENTIMENT SIMULATOR (Scrollable interactivity) ═══ */}
+      <section className="relative w-full py-24 border-y border-white/[0.04] bg-white/[0.01]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center space-y-3 mb-12">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight font-sans">Interactive Market Analysis</h2>
+            <p className="text-white/40 text-sm max-w-lg mx-auto">
+              Test how the Sentinel AI sweeps sentiment feeds in real-time. Type anything to trigger mock council decisions.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-5xl mx-auto">
+            {/* Input Side */}
+            <div className="lg:col-span-7 glass-panel rounded-2xl p-6 border border-white/[0.06]">
+              <span className="text-[10px] uppercase font-mono text-white/40 tracking-wider block mb-2">Simulated RSS / News Text</span>
+              <textarea
+                value={simulationText}
+                onChange={(e) => setSimulationText(e.target.value)}
+                className="w-full h-32 p-4 bg-black/40 border border-white/[0.08] focus:border-white/30 rounded-xl focus:outline-none text-white text-sm leading-relaxed resize-none transition-colors"
+                placeholder="Type market rumor or tweet..."
+              />
+              
+              <div className="flex gap-2 flex-wrap mt-3">
+                <button 
+                  onClick={() => setSimulationText("Massive rumors of Cronos network partnership, sentiment is through the roof! Buy buy buy!")}
+                  className="px-2.5 py-1 bg-white/[0.04] hover:bg-white/[0.08] text-white/50 hover:text-white text-[10px] rounded font-mono border border-white/[0.04] transition-all"
+                >
+                  Example Bullish
+                </button>
+                <button 
+                  onClick={() => setSimulationText("Warning: High volatility and sudden sell-off risk on Cronos token, proceed with extreme caution.")}
+                  className="px-2.5 py-1 bg-white/[0.04] hover:bg-white/[0.08] text-white/50 hover:text-white text-[10px] rounded font-mono border border-white/[0.04] transition-all"
+                >
+                  Example Bearish
+                </button>
+              </div>
+            </div>
+
+            {/* Simulated Output Side */}
+            <div className="lg:col-span-5 flex flex-col justify-between glass-panel rounded-2xl p-6 border border-white/[0.06] bg-black/40">
+              <div className="space-y-4">
+                <span className="text-[10px] uppercase font-mono text-white/40 tracking-wider block">Decision Result</span>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-white/60">Sentiment Weight</span>
+                  <span className="text-base font-bold font-mono text-white">{(simulatedScore * 100).toFixed(0)}%</span>
+                </div>
+
+                <div className="w-full bg-white/[0.04] rounded-full h-2">
+                  <div 
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      simulatedSignal === "BUY" ? "bg-emerald-400" : simulatedSignal === "SELL" ? "bg-rose-400" : "bg-amber-400"
+                    }`}
+                    style={{ width: `${simulatedScore * 100}%` }}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center border-t border-white/[0.04] pt-4">
+                  <span className="text-xs text-white/60">Simulated Action</span>
+                  <span className={`px-3 py-1 rounded font-mono text-xs font-bold ${
+                    simulatedSignal === "BUY" ? "bg-emerald-500/10 border border-emerald-500/20 text-emerald-400" :
+                    simulatedSignal === "SELL" ? "bg-rose-500/10 border border-rose-500/20 text-rose-400" :
+                    "bg-amber-500/10 border border-amber-500/20 text-amber-400"
+                  }`}>
+                    {simulatedSignal}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-white/[0.04] text-[10px] text-white/30 leading-relaxed font-mono">
+                💡 Real-time VADER parses inputs keylessly without expensive API calls, triggering immediate execution pre-flight feasibility tests.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 3: THREE-AGENT COUNCIL BENTO SHOWCASE ═══ */}
+      <section className="relative w-full py-24 max-w-7xl mx-auto px-6">
+        <div className="text-center space-y-3 mb-16">
+          <span className="text-xs uppercase font-mono tracking-widest text-white/30">Three-Agent Consensus</span>
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight">The Trading Council</h2>
+          <p className="text-white/40 text-sm max-w-lg mx-auto">
+            Decisions are never unilateral. The Sentinel Council requires a majority vote from specialized autonomous systems.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1: Risk Manager */}
+          <div className="glass-panel rounded-2xl p-6 border border-white/[0.06] hover:border-white/[0.12] hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-4">
+              <Shield className="w-5 h-5 text-white/80" />
+            </div>
+            <h3 className="text-base font-bold text-white mb-2">🛡️ Risk Manager</h3>
+            <p className="text-xs text-white/50 leading-relaxed mb-4">
+              Enforces stop-loss parameters, verifies account size vs execution limits, and overrides trade targets if market volatility rises above historic safety baselines.
+            </p>
+            <span className="text-[10px] font-mono text-white/30 tracking-wider">CONSERVATIVE PIPELINE</span>
+          </div>
+
+          {/* Card 2: Market Analyst */}
+          <div className="glass-panel rounded-2xl p-6 border border-white/[0.06] hover:border-white/[0.12] hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-4">
+              <Activity className="w-5 h-5 text-white/80" />
+            </div>
+            <h3 className="text-base font-bold text-white mb-2">📊 Market Analyst</h3>
+            <p className="text-xs text-white/50 leading-relaxed mb-4">
+              Listens to real-time price feeds, compares CoinGecko and Crypto.com oracle outputs, and scans global news streams via VADER lexicon weights.
+            </p>
+            <span className="text-[10px] font-mono text-white/30 tracking-wider">DATA-DRIVEN PIPELINE</span>
+          </div>
+
+          {/* Card 3: Execution Specialist */}
+          <div className="glass-panel rounded-2xl p-6 border border-white/[0.06] hover:border-white/[0.12] hover:translate-y-[-2px] transition-all">
+            <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center mb-4">
+              <Zap className="w-5 h-5 text-white/80" />
+            </div>
+            <h3 className="text-base font-bold text-white mb-2">⚡ Execution Specialist</h3>
+            <p className="text-xs text-white/50 leading-relaxed mb-4">
+              Generates wrap/unwrap contract calls, audits pool spreads, checks Gas limit options, and fires execution packets immediately to the EVM network.
+            </p>
+            <span className="text-[10px] font-mono text-white/30 tracking-wider">HIGH-FREQUENCY ROUTING</span>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 4: SENTINELCLAMP SAFETY GUARD ═══ */}
+      <section className="relative w-full py-24 border-t border-white/[0.04] bg-white/[0.01]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            {/* Left Side: Detail */}
+            <div className="lg:col-span-6 space-y-6">
+              <span className="text-xs uppercase font-mono tracking-wider text-white/40 block">Smart Contract Safety</span>
+              <h2 className="text-3xl md:text-5xl font-bold tracking-tight">On-Chain Safe clamping.</h2>
+              <p className="text-white/50 text-sm leading-relaxed">
+                Autonomous trading can be volatile. That&apos;s why Sentinel uses SentinelClamp™: 
+                a hardcoded safe threshold limit directly inside the transaction router contract.
+              </p>
+              
+              <ul className="space-y-3.5 text-xs text-white/60">
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  Max daily trade volume clamp
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  Gas reserve safety limit checking
+                </li>
+                <li className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  Multi-Sig / Council authorization proof on-chain
+                </li>
+              </ul>
+            </div>
+
+            {/* Right Side: Visual Mock Panel */}
+            <div className="lg:col-span-6">
+              <div className="glass-panel rounded-2xl p-6 border border-white/[0.08] space-y-4">
+                <div className="flex justify-between items-center border-b border-white/[0.04] pb-3">
+                  <span className="text-xs font-semibold text-white font-mono">SentinelClamp.sol</span>
+                  <span className="text-[10px] text-white/30 font-mono">Testnet V1.4</span>
+                </div>
+
+                <div className="space-y-3.5">
+                  <div>
+                    <div className="flex justify-between text-[11px] mb-1 font-mono">
+                      <span className="text-white/40">DAILY LIMIT</span>
+                      <span className="text-white">10.0 CRO</span>
+                    </div>
+                    <div className="w-full bg-white/[0.04] rounded-full h-1">
+                      <div className="bg-white h-1 rounded-full" style={{ width: "100%" }} />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between text-[11px] mb-1 font-mono">
+                      <span className="text-white/40">SPENT TODAY</span>
+                      <span className="text-white font-bold text-emerald-400">1.2 CRO</span>
+                    </div>
+                    <div className="w-full bg-white/[0.04] rounded-full h-1.5">
+                      <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: "12%" }} />
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-white/[0.02] border border-white/[0.04] rounded-lg text-[10px] font-mono text-white/40 leading-relaxed">
+                    🔐 Any attempt by the AI agent to exceed the daily limit will trigger a contract revert: 
+                    <span className="text-rose-400 block mt-1">Error: SentinelClamp: Limit Exceeded</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ SECTION 5: FINAL CTA ═══ */}
+      <section className="relative w-full py-28 text-center max-w-4xl mx-auto px-6">
+        <div className="space-y-6">
+          <h2 className="text-4xl md:text-6xl font-bold tracking-tight">Ready to activate?</h2>
+          <p className="text-white/45 text-sm max-w-md mx-auto leading-relaxed">
+            Connect your MetaMask wallet, switch to Cronos Testnet, and start deploying multi-agent capital strategies in seconds.
+          </p>
+          <div className="pt-4">
             <button 
               onClick={handleLaunchTerminal}
-              className="w-full sm:w-auto px-8 py-3.5 bg-white hover:bg-neutral-200 text-black font-semibold rounded-full transition-all duration-200 shadow-xl flex items-center justify-center gap-2 group"
+              className="mx-auto px-8 py-3.5 bg-white hover:bg-white/90 text-black font-bold rounded-full transition-all flex items-center justify-center gap-2 group shadow-[0_0_30px_rgba(255,255,255,0.15)]"
             >
-              <span>Launch Terminal</span>
+              <span>Access Terminal Dashboard</span>
               <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
             </button>
-            
-            <Link 
-              href="/how-it-works"
-              className="w-full sm:w-auto px-7 py-3.5 bg-neutral-950 hover:bg-neutral-900 text-neutral-200 hover:text-white font-medium rounded-full border border-neutral-800 hover:border-neutral-600 transition-all flex items-center justify-center gap-2"
-            >
-              <span>System Architecture</span>
-              <ExternalLink className="w-3.5 h-3.5 text-neutral-400" />
-            </Link>
-          </motion.div>
+          </div>
+        </div>
+      </section>
 
-          {/* Feature Cards Grid */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-4xl mx-auto"
-          >
-            <div className="p-5 rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md hover:border-neutral-700 transition-all">
-              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
-                <Shield className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="text-white font-semibold text-sm mb-1">SentinelClamp Guard</h3>
-              <p className="text-neutral-400 text-xs leading-relaxed">
-                Smart contract limits daily spending autonomously so AI never over-trades your funds.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md hover:border-neutral-700 transition-all">
-              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
-                <Activity className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="text-white font-semibold text-sm mb-1">VADER NLP & RSS Feed</h3>
-              <p className="text-neutral-400 text-xs leading-relaxed">
-                Keyless real-time market sentiment parsing across CoinGecko and live CryptoPanic feeds.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl border border-neutral-800 bg-neutral-950/80 backdrop-blur-md hover:border-neutral-700 transition-all">
-              <div className="w-8 h-8 rounded-lg bg-neutral-900 border border-neutral-800 flex items-center justify-center mb-3">
-                <Terminal className="w-4 h-4 text-white" />
-              </div>
-              <h3 className="text-white font-semibold text-sm mb-1">Multi-Agent Voting</h3>
-              <p className="text-neutral-400 text-xs leading-relaxed">
-                3 AI agents (Risk Manager, Market Analyst, Executioner) form consensus on every swap.
-              </p>
-            </div>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Minimal Footer */}
-      <footer className="border-t border-neutral-900 py-6 px-6 bg-black text-center relative z-10">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-neutral-500 gap-4">
-          <p>© 2026 Sentinel AI Trader. Built on Cronos EVM.</p>
+      {/* Footer */}
+      <footer className="border-t border-white/[0.04] py-8 px-6 bg-black text-center relative z-10">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-white/30 gap-4">
+          <p>© 2026 Sentinel AI. Built for the Cronos EVM Hackathon.</p>
           <div className="flex items-center gap-6">
-            <Link href="/how-it-works" className="hover:text-neutral-300 transition-colors">How It Works</Link>
-            <Link href="/dashboard" className="hover:text-neutral-300 transition-colors">Dashboard</Link>
+            <Link href="/how-it-works" className="hover:text-white transition-colors">Documentation</Link>
+            <Link href="/dashboard" className="hover:text-white transition-colors">Terminal</Link>
             <a 
               href="https://github.com/ayushkumartht/Brainwave" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="hover:text-neutral-300 transition-colors flex items-center gap-1"
+              className="hover:text-white transition-colors flex items-center gap-1"
             >
               <Github className="w-3.5 h-3.5" />
               <span>GitHub</span>
