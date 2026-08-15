@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
         <WalletProvider>
           {children}
@@ -36,22 +36,22 @@ export default function RootLayout({
             toastOptions={{
               duration: 3000,
               style: {
-                background: '#1f2937',
-                color: '#fff',
-                border: '1px solid #374151',
+                background: '#0a0a0a',
+                color: '#ffffff',
+                border: '1px solid #333333',
               },
               success: {
                 duration: 3000,
                 iconTheme: {
-                  primary: '#10b981',
-                  secondary: '#fff',
+                  primary: '#ffffff',
+                  secondary: '#000000',
                 },
               },
               error: {
                 duration: 4000,
                 iconTheme: {
-                  primary: '#ef4444',
-                  secondary: '#fff',
+                  primary: '#888888',
+                  secondary: '#000000',
                 },
               },
             }}

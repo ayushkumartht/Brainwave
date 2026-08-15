@@ -12,35 +12,49 @@
   --font-mono: var(--font-geist-mono);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html {
+  color-scheme: dark;
+  background-color: #000000;
+  /* Pure crisp Black and White theme */
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
 }
 
-/* Scrollbar styling */
+body {
+  background: #000000;
+  color: #ffffff;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Image & graphic elements high-contrast grayscale */
+img, svg, canvas {
+  filter: grayscale(100%) contrast(110%);
+}
+
+/* Scrollbar styling - pure monochrome */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1f2937;
+  background: #0a0a0a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 4px;
+  background: #2a2a2a;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: #555555;
 }
 
 /* TradingView widget container */
 .tradingview-widget-container {
   height: 100%;
   width: 100%;
+  filter: grayscale(100%);
 }
 
 .tradingview-widget-container__widget {
@@ -51,10 +65,10 @@ body {
 /* Pulse animation for status indicators */
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 5px currentColor;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
   }
   50% {
-    box-shadow: 0 0 20px currentColor;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
   }
 }
 
