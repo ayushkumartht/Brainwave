@@ -19,11 +19,11 @@ import schedule
 from typing import Dict
 from datetime import datetime
 from dotenv import load_dotenv
-try:
-    from signal import signal as signal_handler, SIGALRM, alarm
-except ImportError:
-    SIGALRM = None
-    alarm = None
+import threading
+
+# Windows-compatible timeout via threading
+SIGALRM = None  # not available on Windows
+alarm = None
 
 
 
@@ -54,8 +54,26 @@ from backend_client import BackendClient
 class CouncilTimeout(Exception):
     pass
 
-def timeout_handler(signum, frame):
-    raise CouncilTimeout("Council voting timeout")
+def run_with_timeout(func, args=(), kwargs={}, timeout_seconds=60):
+    """Cross-platform timeout using threading (works on Windows + Linux)"""
+    result_container = [None]
+    exception_container = [None]
+
+    def target():
+        try:
+            result_container[0] = func(*args, **kwargs)
+        except Exception as e:
+            exception_container[0] = e
+
+    thread = threading.Thread(target=target, daemon=True)
+    thread.start()
+    thread.join(timeout=timeout_seconds)
+
+    if thread.is_alive():
+        raise CouncilTimeout(f"Council voting timed out after {timeout_seconds}s")
+    if exception_container[0]:
+        raise exception_container[0]
+    return result_container[0]
 
 load_dotenv()
 
@@ -186,27 +204,25 @@ class AutonomousTrader:
                 sys.stdout.flush()
                 return {"action": "hold", "reason": "Council voting payment failed"}
             
-            # Get votes from 3 AI agents (with 60-second timeout)
+            # Get votes from 3 AI agents (with 60-second cross-platform timeout)
             print("\n⏳ Waiting for Multi-Agent Council votes (max 60s)...")
             sys.stdout.flush()
-            
+
             try:
-                # Set 60-second timeout alarm
-                signal_handler(SIGALRM, timeout_handler)
-                alarm(60)
-                
-                council_result = self.council.vote_on_trade(
-                    market_data={
-                        'signal': signal['signal'],
-                        'sentiment_score': signal.get('avg_sentiment', 0),
-                        'strength': signal.get('strength', 0)
+                # Use threading-based timeout (works on Windows + Linux)
+                council_result = run_with_timeout(
+                    self.council.vote_on_trade,
+                    kwargs={
+                        'market_data': {
+                            'signal': signal['signal'],
+                            'sentiment_score': signal.get('avg_sentiment', 0),
+                            'strength': signal.get('strength', 0)
+                        },
+                        'sentiment_signal': signal
                     },
-                    sentiment_signal=signal
+                    timeout_seconds=60
                 )
-                
-                # Cancel alarm if successful
-                alarm(0)
-                
+
             except CouncilTimeout:
                 print("\n⚠️  Council voting timeout (60s) - using sentiment signal directly")
                 sys.stdout.flush()
