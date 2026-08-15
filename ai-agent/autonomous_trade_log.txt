@@ -375,3 +375,13 @@ Council Consensus: strong_buy (confidence: 0.90)
   🛡️ Risk Manager: buy (0.80) - Although the sentiment score is slightly lower, the signal is strong, strength is 4/4, and it's tren
   📊 Market Analyst: strong_buy (0.90) - With a unanimous strong buy signal, positive trend, and solid sentiment, a strong buy is warranted.
   ⚡ Execution Specialist: strong_buy (1.00) - With a strong buy signal, full strength, and a trending market, we must act decisively to maximize p
+
+============================================================
+Time: 2026-08-16 00:22:25
+Signal: hold (0)
+Sentiment: 0.279
+Trending: False
+Council Consensus: hold (confidence: 0.47)
+  🛡️ Risk Manager: hold (0.90) - The unchanged market conditions, with a hold signal, stable sentiment score, and no indicators of st
+  📊 Market Analyst: hold (0.50) - The market data remains unchanged, with a steady sentiment score of 0.279 and no indications of stre
+  ⚡ Execution Specialist: hold (0.00) - Error getting vote: Error code: 429 - {'error': {'message': 'Rate limit reached for model `llama-3.3
