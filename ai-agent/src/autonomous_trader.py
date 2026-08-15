@@ -19,12 +19,24 @@ import schedule
 from typing import Dict
 from datetime import datetime
 from dotenv import load_dotenv
-from signal import signal as signal_handler, SIGALRM, alarm
+try:
+    from signal import signal as signal_handler, SIGALRM, alarm
+except ImportError:
+    SIGALRM = None
+    alarm = None
+
+
 
 # Add src to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
+import typing
+import typing_extensions
+if not hasattr(typing, 'Self'):
+    typing.Self = typing_extensions.Self
+
 from crypto_com_agent_client import Agent, SQLitePlugin
+
 from crypto_com_agent_client.lib.enums.provider_enum import Provider
 
 from agents.market_data_agent import MARKET_DATA_TOOLS_PRO

@@ -6,14 +6,20 @@ Real Sentiment Sources - No API Keys Required
 """
 
 import os
+import sys
 import requests
 import feedparser
 from typing import Dict, List
 from datetime import datetime
 from dotenv import load_dotenv
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import google.generativeai as genai
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 load_dotenv()
+
 
 
 class RealSentimentAnalyzer:
@@ -21,8 +27,19 @@ class RealSentimentAnalyzer:
     
     def __init__(self):
         self.cryptopanic_rss = "https://cryptopanic.com/news/rss/"
-        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-        self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+        self.vader = SentimentIntensityAnalyzer()
+        
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        if gemini_key and not gemini_key.startswith("your_"):
+            try:
+                genai.configure(api_key=gemini_key)
+                self.gemini_model = genai.GenerativeModel('gemini-2.5-flash')
+            except Exception as e:
+                print(f"⚠️ Could not initialize Gemini model: {e}")
+                self.gemini_model = None
+        else:
+            self.gemini_model = None
+
     
     def get_cryptopanic_news(self, filter_keywords=None) -> List[Dict]:
         """
@@ -184,6 +201,45 @@ REASONING: [one sentence explanation]"""
                 "reasoning": f"Analysis failed: {str(e)[:50]}"
             }
     
+    def analyze_headlines_with_vader(self, articles: List[Dict]) -> Dict:
+        """
+        Analyze sentiment of headlines using VADER (100% keyless fallback).
+        """
+        if not articles:
+            return {
+                "sentiment_score": 0.0,
+                "confidence": "low",
+                "reasoning": "No articles to analyze"
+            }
+        
+        bullish_keywords = ['bullish', 'moon', 'surge', 'buy', 'growth', 'partnership', 'record', 'lfg', 'up', 'ath']
+        bearish_keywords = ['bearish', 'drop', 'dump', 'crash', 'down', 'fud', 'hack', 'scam', 'sec', 'sued']
+        
+        scores = []
+        for article in articles:
+            title = article.get('title', '').lower()
+            vader_res = self.vader.polarity_scores(title)
+            score = vader_res['compound']
+            
+            if any(kw in title for kw in bullish_keywords):
+                score = min(score + 0.25, 1.0)
+            if any(kw in title for kw in bearish_keywords):
+                score = max(score - 0.25, -1.0)
+            
+            scores.append(score)
+        
+        avg_score = sum(scores) / len(scores) if scores else 0.0
+        confidence = "medium" if len(articles) >= 5 else "low"
+        
+        print(f"   ✓ VADER Keyless Analysis: {avg_score:.2f} across {len(articles)} headlines")
+        
+        return {
+            "sentiment_score": round(avg_score, 2),
+            "confidence": confidence,
+            "reasoning": f"Keyless VADER analysis of {len(articles)} headlines (CryptoPanic + Google News RSS)",
+            "articles_analyzed": len(articles)
+        }
+
     def get_aggregated_sentiment(self) -> Dict:
         """
         Aggregate sentiment from all real sources
@@ -205,13 +261,23 @@ REASONING: [one sentence explanation]"""
         
         if not all_articles:
             print("   ⚠️  No articles found")
-            raise Exception("No articles found for sentiment analysis")
+            return {
+                "source": "real_news_vader",
+                "sentiment_score": 0.0,
+                "confidence": "low",
+                "reasoning": "No articles retrieved from RSS feeds",
+                "articles_count": 0,
+                "timestamp": datetime.now().isoformat()
+            }
         
-        # Analyze with Gemini API (primary source only)
-        analysis = self.analyze_headlines_with_gemini(all_articles)
+        # Use Gemini AI if model available, otherwise VADER (keyless)
+        if self.gemini_model is not None:
+            analysis = self.analyze_headlines_with_gemini(all_articles)
+        else:
+            analysis = self.analyze_headlines_with_vader(all_articles)
         
         return {
-            "source": "real_news",
+            "source": "real_news_gemini" if self.gemini_model else "real_news_vader_keyless",
             "sentiment_score": analysis["sentiment_score"],
             "confidence": analysis["confidence"],
             "reasoning": analysis["reasoning"],
@@ -221,6 +287,7 @@ REASONING: [one sentence explanation]"""
             "sample_headlines": [a['title'] for a in all_articles[:3]],
             "timestamp": datetime.now().isoformat()
         }
+
 
 
 def main():

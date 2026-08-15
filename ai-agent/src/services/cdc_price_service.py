@@ -58,6 +58,36 @@ class CDCPriceService:
             'source': 'crypto.com_simulated'  # Changed from 'mock'
         }
     
+    def _fetch_coingecko_fallback(self, coin_id="crypto-com-chain"):
+        """Fetch live price from CoinGecko Public API (No key required)"""
+        try:
+            import requests
+            url = f"https://api.coingecko.com/api/v3/simple/price"
+            params = {
+                "ids": coin_id,
+                "vs_currencies": "usd",
+                "include_24hr_vol": "true",
+                "include_24hr_change": "true"
+            }
+            res = requests.get(url, params=params, timeout=10)
+            if res.status_code == 200:
+                data = res.json().get(coin_id, {})
+                price = float(data.get("usd", 0))
+                change_24h = float(data.get("usd_24h_change", 0))
+                vol_24h = float(data.get("usd_24h_vol", 0))
+                if price > 0:
+                    return {
+                        'price': price,
+                        'change_24h': change_24h,
+                        'volume_24h': vol_24h,
+                        'high_24h': round(price * 1.02, 6),
+                        'low_24h': round(price * 0.98, 6),
+                        'source': 'coingecko_public_api'
+                    }
+        except Exception as e:
+            pass
+        return self._generate_mock_data()
+
     def get_cro_price(self):
         """
         Fetch current CRO/USD price from Crypto.com Exchange
@@ -66,8 +96,7 @@ class CDCPriceService:
             dict: Price data with current, 24h change, volume, etc.
         """
         if not CDC_AVAILABLE or not self.initialized:
-            # Silently use simulated data
-            return self._generate_mock_data()
+            return self._fetch_coingecko_fallback()
         
         try:
             # Fetch REAL price from Crypto.com Exchange (same as your agent)
@@ -81,7 +110,6 @@ class CDCPriceService:
             low_24h = float(data.get('low', 0))
             
             # Calculate percentage change from absolute change
-            # priceChange is the absolute $ change, so: (change / (current - change)) * 100
             if last_price > 0:
                 price_24h_ago = last_price - price_change_absolute
                 change_24h_pct = (price_change_absolute / price_24h_ago) * 100 if price_24h_ago != 0 else 0
@@ -95,15 +123,14 @@ class CDCPriceService:
                     'source': 'crypto.com_exchange'
                 }
             else:
-                # Silent fallback
-                return self._generate_mock_data()
+                return self._fetch_coingecko_fallback()
             
         except Exception as e:
             # Check if it's a timeout (VPN needed)
             if 'timeout' in str(e).lower() or 'timed out' in str(e).lower():
-                print("💡 Tip: Enable VPN to connect to Crypto.com API for real prices")
-            # Use simulated data
-            return self._generate_mock_data()
+                print("💡 Tip: Connecting to CoinGecko Public API for live price fallback...")
+            return self._fetch_coingecko_fallback()
+
     
     def get_cro_market_data(self):
         """

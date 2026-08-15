@@ -3,12 +3,17 @@ Executioner Agent - Autonomous Swap Execution
 Handles trade execution with Sentinel safety checks
 """
 import os
+import sys
 from typing import Dict, Any
 from web3 import Web3
 from dotenv import load_dotenv
 from langchain_core.tools import tool
 
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+
 load_dotenv()
+
 
 # Contract ABIs
 ROUTER_ABI = [
@@ -195,8 +200,10 @@ def execute_swap_autonomous(
         })
         
         signed_wrap = account.sign_transaction(wrap_tx)
-        wrap_hash = w3.eth.send_raw_transaction(signed_wrap.raw_transaction)
+        raw_tx = getattr(signed_wrap, 'raw_transaction', getattr(signed_wrap, 'rawTransaction', None))
+        wrap_hash = w3.eth.send_raw_transaction(raw_tx)
         receipt = w3.eth.wait_for_transaction_receipt(wrap_hash)
+
         
         if receipt['status'] == 1:
             return {

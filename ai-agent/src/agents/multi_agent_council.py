@@ -10,10 +10,14 @@ from typing import Dict, List
 from datetime import datetime
 from dotenv import load_dotenv
 
-load_dotenv()
+import typing
+import typing_extensions
+if not hasattr(typing, 'Self'):
+    typing.Self = typing_extensions.Self
 
 from crypto_com_agent_client import Agent, SQLitePlugin
 from crypto_com_agent_client.lib.enums.provider_enum import Provider
+
 
 # Agent Personalities
 RISK_MANAGER_PERSONALITY = {
@@ -141,19 +145,38 @@ class MultiAgentCouncil:
     
     def _create_agent(self, personality: Dict, instructions: str) -> Agent:
         """Create an AI agent with specific personality"""
+        groq_api_key = os.getenv("GROQ_API_KEY")
         gemini_api_key = os.getenv("GEMINI_API_KEY")
         
-        llm_config = {
-            "provider": Provider.GoogleGenAI,
-            "model": "gemini-2.5-flash",
-            "provider-api-key": gemini_api_key,
-            "temperature": 0.4,
-        }
+        if groq_api_key and not groq_api_key.startswith("your_"):
+            # Set environment variables for LangChain's ChatOpenAI to use Groq
+            os.environ["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
+            os.environ["OPENAI_API_KEY"] = groq_api_key
+            
+            llm_config = {
+                "provider": Provider.OpenAI,
+                "model": "llama-3.3-70b-versatile",
+                "provider-api-key": groq_api_key,
+                "temperature": 0.4,
+            }
+        else:
+            llm_config = {
+                "provider": Provider.GoogleGenAI,
+                "model": "gemini-2.5-flash",
+                "provider-api-key": gemini_api_key,
+                "temperature": 0.4,
+            }
         
+        dev_key = os.getenv("DEVELOPER_PLATFORM_API_KEY")
+        if not dev_key or dev_key.startswith("your_"):
+            dev_key = "default_dev_key"
+
         return Agent.init(
             llm_config=llm_config,
             blockchain_config={
-                "api-key": os.getenv("DEVELOPER_PLATFORM_API_KEY"),
+                "chainId": str(os.getenv("CHAIN_ID", "338")),
+                "explorer-api-key": dev_key,
+                "api-key": dev_key,
                 "private-key": os.getenv("PRIVATE_KEY"),
                 "timeout": 15,
             },
@@ -163,6 +186,8 @@ class MultiAgentCouncil:
                 "tools": self.tools,
             }
         )
+
+
     
     def vote_on_trade(self, market_data: Dict, sentiment_signal: Dict) -> Dict:
         """

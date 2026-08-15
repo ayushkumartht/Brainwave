@@ -3,9 +3,15 @@ Cronos Sentinel Agent - Main Entry Point
 Day 8-10: Market Data Integration with Sentinel Safety
 """
 import os
+import typing
+import typing_extensions
+if not hasattr(typing, 'Self'):
+    typing.Self = typing_extensions.Self
+
 from dotenv import load_dotenv
 from crypto_com_agent_client import Agent, SQLitePlugin
 from crypto_com_agent_client.lib.enums.provider_enum import Provider
+
 
 # Import our custom tools (with real API calls)
 from agents.market_data_agent import MARKET_DATA_TOOLS_PRO
@@ -75,12 +81,27 @@ def create_agent():
     # Initialize SQLite storage for session persistence
     storage = SQLitePlugin(db_path="agent_state.db")
     
-    # Check if using Vertex AI (GCP) or AI Studio (API key)
+    # Check if using Groq, Vertex AI (GCP) or AI Studio (API key)
+    groq_api_key = os.getenv("GROQ_API_KEY")
     gcp_project_id = os.getenv("GCP_PROJECT_ID")
     gemini_api_key = os.getenv("GEMINI_API_KEY")
     
+    # Prioritize Groq if configured
+    if groq_api_key and not groq_api_key.startswith("your_"):
+        # Set environment variables for LangChain's ChatOpenAI to use Groq
+        os.environ["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
+        os.environ["OPENAI_API_KEY"] = groq_api_key
+        
+        llm_config = {
+            "provider": Provider.OpenAI,
+            "model": "llama-3.3-70b-versatile",  # default high-quality Groq model
+            "provider-api-key": groq_api_key,
+            "temperature": 0.7,
+        }
+        print("🔧 Using Groq via OpenAI compatibility (llama-3.3-70b-versatile)")
+        
     # Prioritize Vertex AI if GCP project is configured
-    if gcp_project_id:
+    elif gcp_project_id:
         # Use Vertex AI with Google's generative AI library
         # This will use application-default credentials we set up
         import vertexai
@@ -98,7 +119,7 @@ def create_agent():
         print(f"🔧 Using Vertex AI: {gcp_project_id}")
         print("   Model: gemini-2.5-flash (GCP billing)")
         
-    elif gemini_api_key:
+    elif gemini_api_key and not gemini_api_key.startswith("your_"):
         llm_config = {
             "provider": Provider.GoogleGenAI,
             "model": "gemini-2.5-flash",
@@ -108,16 +129,23 @@ def create_agent():
         print("🔧 Using Gemini AI Studio (free tier)")
         print("   Model: gemini-2.5-flash")
     else:
-        raise ValueError("Either GCP_PROJECT_ID or GEMINI_API_KEY required in .env")
+        raise ValueError("Either GROQ_API_KEY, GCP_PROJECT_ID, or GEMINI_API_KEY required in .env")
     
+    dev_key = os.getenv("DEVELOPER_PLATFORM_API_KEY")
+    if not dev_key or dev_key.startswith("your_"):
+        dev_key = "default_dev_key"
+
     # Initialize agent
     agent = Agent.init(
         llm_config=llm_config,
         blockchain_config={
-            "api-key": os.getenv("DEVELOPER_PLATFORM_API_KEY"),
+            "chainId": str(os.getenv("CHAIN_ID", "338")),
+            "explorer-api-key": dev_key,
+            "api-key": dev_key,
             "private-key": os.getenv("PRIVATE_KEY"),
             "timeout": 30,  # 30 seconds timeout for API calls
         },
+
         plugins={
             "personality": SENTINEL_PERSONALITY,
             "instructions": SENTINEL_INSTRUCTIONS,
