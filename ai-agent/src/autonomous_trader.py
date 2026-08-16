@@ -230,10 +230,12 @@ class AutonomousTrader:
                 council_result = {
                     'consensus': signal['signal'],
                     'confidence': signal.get('strength', 0) / 4.0,
+                    'agreement': '1/1 sentiment fallback',
                     'votes': [{
                         'agent': 'Sentiment Fallback',
                         'vote': signal['signal'],
-                        'confidence': signal.get('strength', 0) / 4.0
+                        'confidence': signal.get('strength', 0) / 4.0,
+                        'reasoning': f"Timeout fallback: signal={signal['signal']}"
                     }]
                 }
             

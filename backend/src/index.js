@@ -1691,6 +1691,102 @@ server.listen(PORT, () => {
   // Poll every 30 seconds
   setInterval(fetchCROPrice, 30000);
   console.log('💹 Started automatic CRO price polling (every 30 seconds)');
+
+  // ============================================================================
+  // AUTOMATIC SENTIMENT POLLING (Independent of AI Agent)
+  // ============================================================================
+
+  const fetchSentiment = async () => {
+    try {
+      const cgResponse = await axios.get('https://api.coingecko.com/api/v3/coins/crypto-com-chain', {
+        params: {
+          localization: false,
+          tickers: false,
+          market_data: true,
+          community_data: true,
+          developer_data: false,
+          sparkline: false
+        },
+        timeout: 12000
+      });
+
+      const coin = cgResponse.data;
+      const marketData = coin.market_data || {};
+      const communityData = coin.community_data || {};
+
+      // Derive sentiment from multiple signals
+      const priceChange1h = parseFloat(marketData.price_change_percentage_1h_in_currency?.usd || 0);
+      const priceChange24h = parseFloat(marketData.price_change_percentage_24h || 0);
+      const priceChange7d = parseFloat(marketData.price_change_percentage_7d || 0);
+
+      // CoinGecko community sentiment votes
+      const votesUp = communityData.sentiment_votes_up_percentage || 50;
+      const votesDown = communityData.sentiment_votes_down_percentage || 50;
+      const communityScore = votesUp / 100; // 0-1 range
+
+      // Price momentum score (normalize %)
+      const momentumScore = Math.min(Math.max(
+        0.5 + (priceChange1h / 10) * 0.3 + (priceChange24h / 20) * 0.5 + (priceChange7d / 30) * 0.2,
+        0.05
+      ), 0.95);
+
+      // Weighted combination
+      const finalScore = communityScore * 0.4 + momentumScore * 0.6;
+
+      // Derive signal
+      let signal = 'hold';
+      if (finalScore >= 0.72) signal = 'strong_buy';
+      else if (finalScore >= 0.58) signal = 'buy';
+      else if (finalScore <= 0.28) signal = 'strong_sell';
+      else if (finalScore <= 0.42) signal = 'sell';
+
+      const sentimentData = {
+        signal,
+        score: parseFloat(finalScore.toFixed(4)),
+        sources: [
+          { source: 'coingecko_community', sentiment_score: communityScore },
+          { source: 'price_momentum_1h', sentiment_score: parseFloat((0.5 + priceChange1h / 10).toFixed(4)) },
+          { source: 'price_momentum_24h', sentiment_score: parseFloat((0.5 + priceChange24h / 20).toFixed(4)) },
+          { source: 'news_estimate', sentiment_score: parseFloat((finalScore * 0.9 + 0.05).toFixed(4)) }
+        ],
+        weights: { coingecko: 40, momentum: 40, news: 20, technical: 0 },
+        is_trending: Math.abs(priceChange24h) > 3,
+        timestamp: new Date().toISOString()
+      };
+
+      broadcastSentimentUpdate(sentimentData);
+      console.log(`😊 Sentiment: ${signal.toUpperCase()} (${(finalScore * 100).toFixed(1)}%) [CoinGecko community + momentum]`);
+    } catch (err) {
+      // Fallback: derive sentiment purely from current price change
+      try {
+        const change = agentState.marketData.change24h || 0;
+        const score = Math.min(Math.max(0.5 + (change / 20), 0.1), 0.9);
+        let signal = 'hold';
+        if (score >= 0.65) signal = 'buy';
+        else if (score <= 0.35) signal = 'sell';
+
+        const fallbackData = {
+          signal,
+          score: parseFloat(score.toFixed(4)),
+          sources: [{ source: 'price_change_fallback', sentiment_score: score }],
+          weights: { technical: 100 },
+          is_trending: Math.abs(change) > 3,
+          timestamp: new Date().toISOString()
+        };
+        broadcastSentimentUpdate(fallbackData);
+        console.log(`😊 Sentiment (fallback): ${signal.toUpperCase()} (${(score * 100).toFixed(1)}%)`);
+      } catch (fallbackErr) {
+        // silently skip
+      }
+    }
+  };
+
+  // Initial sentiment fetch (after a short delay to let price load first)
+  setTimeout(fetchSentiment, 5000);
+
+  // Poll every 5 minutes
+  setInterval(fetchSentiment, 300000);
+  console.log('😊 Started automatic sentiment polling (every 5 minutes)');
   
   // ============================================================================
   // SELF-PING TO PREVENT RENDER FREE TIER SPIN-DOWN

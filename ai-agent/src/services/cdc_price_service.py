@@ -30,12 +30,12 @@ class CDCPriceService:
         try:
             # Initialize Exchange client (public API, no key needed for market data)
             api_key = os.getenv("DEVELOPER_PLATFORM_API_KEY")
-            if api_key:
-                Client.init(api_key=api_key)
-                print("✅ Crypto.com Exchange initialized with API key")
-            else:
-                Client.init()
-                print("✅ Crypto.com Exchange initialized (public API)")
+            if not api_key or "your_" in api_key:
+                api_key = "mock_key"
+            chain_id = os.getenv("CHAIN_ID", "338")
+            
+            Client.init(api_key=api_key, chain_id=chain_id)
+            print(f"✅ Crypto.com Exchange initialized (API Key: {'configured' if api_key != 'mock_key' else 'public mode'}, Chain: {chain_id})")
             
             self.initialized = True
         except Exception as e:

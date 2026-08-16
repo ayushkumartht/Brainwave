@@ -754,9 +754,9 @@ export default function Dashboard() {
         });
       }
       
-      // Sentiment data comes from WebSocket only (avoid 402 payment on page load)
+      // Sentiment data comes from WebSocket primarily, but we seed from explainable-ai as fallback on load
       
-      // Fetch explainable AI reasoning
+      // Fetch explainable AI reasoning + sentiment seed
       const explainRes = await fetch(`${API_BASE}/agent/explainable-ai`);
       if (explainRes.ok) {
         const explainData = await explainRes.json();
@@ -782,7 +782,38 @@ export default function Dashboard() {
           }
         };
         setExplainableAI(safeExplainData);
+
+        // Seed marketIntel and sentimentHistory from explainableAI sentiment_data
+        const sentData = explainData?.sentiment_data;
+        if (sentData && typeof sentData.score === 'number' && sentData.score > 0) {
+          const score = parseFloat(sentData.score) || 0.5;
+          const signal = sentData.signal || 'hold';
+          console.log('🔄 Seeding sentiment from explainableAI:', { score, signal });
+          setMarketIntel(prev => ({
+            ...prev,
+            signal,
+            sentiment: score,
+            sources: Array.isArray(sentData.sources) ? sentData.sources.length : 0,
+            timestamp: new Date().toISOString(),
+            overall_sentiment: score,
+          }));
+          // Append a real data point to sentimentHistory
+          const now = new Date();
+          setSentimentHistory(prev => {
+            const newPoint = {
+              timestamp: now.toISOString(),
+              hour: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`,
+              sentiment: score,
+              score,
+              reddit: 0,
+              twitter: 0,
+              news: 0,
+            };
+            return [...prev.slice(-23), newPoint];
+          });
+        }
       }
+
       
       // Fetch trade history (agent's trades - manual + autonomous)
       // Use agent address since all trades are executed by the agent's wallet

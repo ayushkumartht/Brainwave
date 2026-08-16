@@ -10,8 +10,10 @@ import os
 # Initialize Client for Exchange API (required)
 try:
     api_key = os.getenv('DEVELOPER_PLATFORM_API_KEY')
-    if api_key:
-        Client.init(api_key=api_key)
+    if not api_key or "your_" in api_key:
+        api_key = "mock_key"
+    chain_id = os.getenv('CHAIN_ID', '338')
+    Client.init(api_key=api_key, chain_id=chain_id)
 except Exception as e:
     print(f"Warning: Exchange Client initialization failed: {e}")
 
