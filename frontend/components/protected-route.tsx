@@ -2,24 +2,29 @@
 
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isConnected, isConnecting } = useAccount()
+  const [mounted, setMounted] = useState(false)
+  const { isConnected, isConnecting, status } = useAccount()
   const router = useRouter()
 
   useEffect(() => {
-    if (!isConnecting && !isConnected) {
+    setMounted(true)
+  }, [])
+
+  useEffect(() => {
+    if (mounted && !isConnecting && status !== 'reconnecting' && !isConnected) {
       router.push('/')
     }
-  }, [isConnected, isConnecting, router])
+  }, [mounted, isConnected, isConnecting, status, router])
 
-  if (isConnecting) {
+  if (!mounted || isConnecting || status === 'reconnecting') {
     return (
-      <div className="w-full h-screen flex items-center justify-center bg-black">
+      <div className="w-full h-screen flex items-center justify-center bg-[#050505] text-white">
         <div className="flex flex-col items-center gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500"></div>
-          <p className="text-white/60">Checking wallet connection...</p>
+          <div className="w-10 h-10 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+          <p className="text-white/60 text-xs font-mono tracking-wider uppercase">Checking wallet connection...</p>
         </div>
       </div>
     )
