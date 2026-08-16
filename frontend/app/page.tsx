@@ -23,6 +23,110 @@ import {
   CheckCircle2,
   DollarSign
 } from "lucide-react";
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip
+} from "recharts";
+
+// Simulated live ticking terminal chart for trading look
+function LiveTickerChart() {
+  const [data, setData] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Generate initial baseline time points
+    const baseTime = Date.now();
+    const initialData = Array.from({ length: 15 }, (_, i) => {
+      const timeVal = new Date(baseTime - (15 - i) * 3000);
+      return {
+        time: timeVal.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+        price: 0.0482 + Math.sin(i * 0.4) * 0.0006 + Math.random() * 0.0003,
+      };
+    });
+    setData(initialData);
+
+    const interval = setInterval(() => {
+      setData((prev) => {
+        if (prev.length === 0) return prev;
+        const lastPrice = prev[prev.length - 1].price;
+        // Mild upward trending random walk
+        const nextPrice = lastPrice + (Math.random() - 0.46) * 0.00025;
+        const nowStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        return [...prev.slice(1), { time: nowStr, price: nextPrice }];
+      });
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentPrice = data[data.length - 1]?.price || 0.0482;
+  const startPrice = data[0]?.price || 0.0482;
+  const percentChange = ((currentPrice - startPrice) / startPrice) * 100;
+
+  return (
+    <div className="glass-panel rounded-2xl p-6 relative border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-4">
+      <div className="flex items-center justify-between border-b border-white/[0.04] pb-3">
+        <div>
+          <span className="text-[10px] tracking-wider uppercase text-white/40 font-mono">CRO / USD Live Feed</span>
+          <div className="flex items-baseline gap-2 mt-1">
+            <span className="text-xl font-bold font-mono text-white">${currentPrice.toFixed(5)}</span>
+            <span className={`text-[10px] font-mono font-semibold ${percentChange >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+              {percentChange >= 0 ? '▲' : '▼'} {percentChange >= 0 ? '+' : ''}{percentChange.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+        <div className="px-2.5 py-1 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] text-emerald-400 font-mono font-bold animate-pulse">
+          LIVE FEED
+        </div>
+      </div>
+
+      <div className="h-44 w-full bg-black/40 rounded-xl overflow-hidden border border-white/[0.04] p-1">
+        {data.length > 0 && (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data}>
+              <defs>
+                <linearGradient id="liveChartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={percentChange >= 0 ? '#10b981' : '#f43f5e'} stopOpacity={0.25} />
+                  <stop offset="95%" stopColor={percentChange >= 0 ? '#10b981' : '#f43f5e'} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" />
+              <XAxis dataKey="time" hide />
+              <YAxis domain={['auto', 'auto']} hide />
+              <Area
+                type="monotone"
+                dataKey="price"
+                stroke={percentChange >= 0 ? '#10b981' : '#f43f5e'}
+                fill="url(#liveChartGrad)"
+                strokeWidth={2}
+                animationDuration={300}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      <div className="h-20 bg-black/50 rounded-lg p-3 border border-white/[0.04] font-mono text-[9px] space-y-1.5 overflow-hidden">
+        <div className="text-emerald-400 flex justify-between items-center">
+          <span>[TICK] Price updated on-chain</span>
+          <span>${currentPrice.toFixed(6)}</span>
+        </div>
+        <div className="text-cyan-400 flex justify-between items-center">
+          <span>[SENTINEL] Spending clamp status</span>
+          <span>LIMIT_OK</span>
+        </div>
+        <div className="text-white/40 flex justify-between items-center">
+          <span>[COUNCIL] Consensus status</span>
+          <span>3/3 AGREEMENT (BUY)</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function LandingPage() {
   const router = useRouter();
@@ -198,43 +302,9 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Interactive Live Ticker Panel on the Right */}
+          {/* Interactive Live Ticker Chart Panel on the Right */}
           <div className="lg:col-span-5 relative">
-            <div className="glass-panel rounded-2xl p-6 relative border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-              <div className="flex items-center justify-between mb-4 border-b border-white/[0.04] pb-3">
-                <span className="text-[10px] tracking-wider uppercase text-white/40 font-mono">Live Simulation</span>
-                <div className="px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/20 rounded text-[9px] text-emerald-400 font-mono font-bold animate-pulse">
-                  ONLINE
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/[0.04]">
-                  <span className="text-xs text-white/60">Simulated Price</span>
-                  <span className="text-sm font-bold text-white font-mono">$0.0482 CRO</span>
-                </div>
-
-                <div className="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/[0.04]">
-                  <span className="text-xs text-white/60">Sentiment Oracles</span>
-                  <span className="text-sm font-bold text-cyan-400 font-mono">VADER NLP + RSS</span>
-                </div>
-
-                <div className="flex justify-between items-center bg-white/[0.02] p-3 rounded-lg border border-white/[0.04]">
-                  <span className="text-xs text-white/60">Risk Guard Status</span>
-                  <span className="text-sm font-bold text-emerald-400 font-mono flex items-center gap-1">
-                    <Shield className="w-3.5 h-3.5" /> CLAMP_OK
-                  </span>
-                </div>
-
-                {/* Looping ticker values mock */}
-                <div className="h-24 bg-black/40 rounded-lg p-3 border border-white/[0.04] font-mono text-[10px] space-y-1 overflow-hidden">
-                  <div className="text-emerald-400">[01:24:02] VADER: CRO positive sentiment +0.72</div>
-                  <div className="text-white/60">[01:24:15] Council voting: 2 BUY, 1 HOLD</div>
-                  <div className="text-emerald-400">[01:24:20] EXEC: Wrap 0.5 CRO to WCRO - SUCCESS</div>
-                  <div className="text-white/30">[01:24:35] Sentinel clamp daily usage: 1.2/10.0</div>
-                </div>
-              </div>
-            </div>
+            <LiveTickerChart />
           </div>
         </div>
       </section>
